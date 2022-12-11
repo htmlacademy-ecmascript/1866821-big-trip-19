@@ -1,7 +1,7 @@
 import FilterView from '../view/filter-view.js';
-import TripInfoView from '../view/trip-info-view.js'
+import TripInfoView from '../view/trip-info-view.js';
 import {render} from '../render.js';
-import {RenderPosition} from '../const/view.js'
+import {RenderPosition} from '../const/view.js';
 
 export default class TripControlsPresenter {
 
