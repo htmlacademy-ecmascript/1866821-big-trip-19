@@ -1,4 +1,4 @@
-import {RenderPosition} from './const/view.js'
+import {RenderPosition} from './const/view.js';
 
 function createElement(template) {
   const newElement = document.createElement('div');

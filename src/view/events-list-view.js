@@ -366,13 +366,13 @@ export default class EventsListView {
   createTemplate = createEventsListEmptyTemplate;
 
   constructor (template = EventsListTemplateType.EMPTY) {
-      if (template === EventsListTemplateType.FILL) {
-          this.createTemplate = createEventsListTemplate;
-      }
-      if (template === EventsListTemplateType.LOADING) {
-        this.createTemplate = createEventsListLoadingTemplate;
+    if (template === EventsListTemplateType.FILL) {
+      this.createTemplate = createEventsListTemplate;
     }
-  }  
+    if (template === EventsListTemplateType.LOADING) {
+      this.createTemplate = createEventsListLoadingTemplate;
+    }
+  }
 
   getTemplate() {
     return this.createTemplate();

@@ -2,8 +2,8 @@ import SortView from '../view/sort-view.js';
 import PointView from '../view/point-view.js';
 import EventsListView from '../view/events-list-view.js';
 import {render} from '../render';
-import {RenderPosition} from '../const/view.js'
-import {PointTemplateType, EventsListTemplateType} from '../const/view.js' 
+import {RenderPosition} from '../const/view.js';
+import {PointTemplateType, EventsListTemplateType} from '../const/view.js';
 
 export default class TripEventsPresenter {
 
@@ -23,14 +23,11 @@ export default class TripEventsPresenter {
   init() {
     render(this.sortComponent, this.tripContainer);
     render(this.eventsListComponent, this.tripContainer);
-    
-    render(this.pointAddSimpleComponent, this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN)
-    render(this.pointAddWithoutDestinationComponent, this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN)
-    render(this.pointAddWithoutOffersComponent, this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN)
-    render(this.pointEditComponent, this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN)  
-
+    render(this.pointAddSimpleComponent, this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+    render(this.pointAddWithoutDestinationComponent, this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+    render(this.pointAddWithoutOffersComponent, this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+    render(this.pointEditComponent, this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
     render(this.eventsListEmptyComponent, this.tripContainer);
     render(this.eventsListLoadingComponent, this.tripContainer);
-    
   }
 }
