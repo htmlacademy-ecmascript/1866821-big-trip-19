@@ -13,26 +13,3 @@ export const SortDefaultOrder = [
   Sort.PRICE,
   Sort.OFFERS
 ];
-
-export const SortDefaultValues = {
-  [Sort.DAY]: {
-    checked: true,
-    disabled: false
-  },
-  [Sort.EVENT]: {
-    checked: false,
-    disabled: true
-  },
-  [Sort.TIME]: {
-    checked: false,
-    disabled: false
-  },
-  [Sort.PRICE]: {
-    checked: false,
-    disabled: false
-  },
-  [Sort.OFFERS]: {
-    checked: false,
-    disabled: true
-  }
-};

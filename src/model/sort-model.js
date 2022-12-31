@@ -1,14 +1,14 @@
-import {SortDefaultValues, SortDefaultOrder} from '../const/sort.js';
+import {SortDefaultOrder, Sort} from '../const/sort.js';
 
 export class SortModel {
-
   data = {
-    order: SortDefaultOrder.slice(0),
-    values: Object.assign({}, SortDefaultValues),
+    list: SortDefaultOrder.slice(0),
+    checked: Sort.DAY,
+    disabled: [Sort.EVENT, Sort.OFFERS]
   };
 
   setCheckedType({checkedType}) {
-    this.data.values[checkedType].checked = true;
+    this.data.checked = checkedType;
   }
 
   setDisabledTypes({disabledTypes}) {

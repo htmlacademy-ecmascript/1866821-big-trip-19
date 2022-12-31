@@ -1,34 +1,36 @@
-import SortFormView from '../view/sort/sort-form-view.js';
-import SortItemView from '../view/sort/sort-item-view.js';
+import SortView from '../view/sort-view.js';
 import PointsListView from '../view/points/points-list-view.js';
-
+import PointView from '../view/points/point-view.js';
+import { PointModel } from '../model/point-model.js';
+import PointChangeView from '../view/points/point-change-view.js';
+import { PointModelType } from '../const/point.js';
 import {render} from '../render';
-
 import { SortModel } from '../model/sort-model.js';
+import {mockPoints} from '../mock/point.js';
+
 
 export default class TripPointsPresenter {
   sortModel = new SortModel();
-  sortData = this.sortModel.getData();
-  sortFormComponent = new SortFormView();
-  sortFormElement = this.sortFormComponent.getElement();
+  sortComponent = new SortView(this.sortModel.getData());
 
   pointsListComponent = new PointsListView();
+  pointsListElement = this.pointsListComponent.getElement();
+
+  pointModel = new PointModel(Object.assign({}, mockPoints[1]));
+  pointChangeView = new PointChangeView(this.pointModel.getData(PointModelType.ADD));
 
   constructor({tripContainer}) {
     this.tripContainer = tripContainer;
   }
 
   init() {
-    this.sortData.order.forEach( (sortName) => {
-
-      render(new SortItemView({
-        name: sortName,
-        checked: this.sortData.values[sortName].checked,
-        disabled: this.sortData.values[sortName].disabled
-      }), this.sortFormElement);
-    });
-
-    render(this.sortFormComponent, this.tripContainer);
+    render(this.sortComponent, this.tripContainer);
+    render(this.pointChangeView, this.tripContainer);
     render(this.pointsListComponent, this.tripContainer);
+    mockPoints.forEach((point) => {
+      const pointModel = new PointModel(point);
+      const pointComponent = new PointView(pointModel.getData(PointModelType.PREVIEW));
+      render(pointComponent, this.pointsListElement);
+    });
   }
 }
