@@ -1,8 +1,8 @@
-import {SortDefaultOrder, Sort} from '../const/sort.js';
+import {SORT_DEFAULT_ORDER_VALUES, Sort} from '../const/sort.js';
 
 export class SortModel {
   data = {
-    list: SortDefaultOrder.slice(0),
+    list: SORT_DEFAULT_ORDER_VALUES.slice(),
     checked: Sort.DAY,
     disabled: [Sort.EVENT, Sort.OFFERS]
   };

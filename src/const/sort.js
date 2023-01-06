@@ -6,7 +6,7 @@ export const Sort = {
   OFFERS: 'offers'
 };
 
-export const SortDefaultOrder = [
+export const SORT_DEFAULT_ORDER_VALUES = [
   Sort.DAY,
   Sort.EVENT,
   Sort.TIME,

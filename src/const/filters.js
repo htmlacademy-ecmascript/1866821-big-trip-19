@@ -5,7 +5,7 @@ export const Filters = {
   PAST: 'past'
 };
 
-export const FiltersDefaultOrder = [
+export const FILTERS_DEFAULT_ORDER_VALUES = [
   Filters.EVERYTHING,
   Filters.FUTURE,
   Filters.PRESENT,

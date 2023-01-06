@@ -3,8 +3,8 @@ import { mockDestinations } from '../mock/destination.js';
 
 export class TripInfoModel {
   constructor() {
-    this.points = mockPoints.slice(0);
-    this.destinations = mockDestinations.slice(0);
+    this.points = mockPoints.slice();
+    this.destinations = mockDestinations.slice();
   }
 
   #getStartDate() {
@@ -39,14 +39,14 @@ export class TripInfoModel {
   }
 
   #getDestinations() {
-    let prevId = '-1';
+    let previosId = '-1';
     const destinationsIdsNoRepeat = [];
 
     this.points.forEach((point) => {
-      if (prevId !== point.destination) {
+      if (previosId !== point.destination) {
         destinationsIdsNoRepeat.push(point.destination);
       }
-      prevId = point.destination;
+      previosId = point.destination;
     });
 
     const destinationsNames = [];

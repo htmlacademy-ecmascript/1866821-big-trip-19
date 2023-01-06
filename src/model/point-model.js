@@ -22,11 +22,11 @@ export class PointModel {
       offers: this.#getOffers(offers),
       type
     };
-    this.ChangeData = {
+    this.changeData = {
       basePrice,
       dateFrom,
       dateTo,
-      checkedOffers: offers.map((id) => id),
+      checkedOffers: offers,
       offersList: this.#getTypeOffersList(type),
       checkedType: type,
       typesList: PointTypes,
@@ -37,23 +37,19 @@ export class PointModel {
 
 
   #getDestinationTitle(id) {
-    let name = '';
-    mockDestinations.forEach((destination) => {
-      if (destination.id === id) {
-        name = destination.name;
-      }
-    });
-    return name;
+    const pointDestination = mockDestinations.find( (destination) => destination.id === id );
+    if (pointDestination !== undefined) {
+      return pointDestination.name;
+    }
+    return '';
   }
 
   #getFullDestination(id) {
-    let fullDestination = {};
-    mockDestinations.forEach((destination) => {
-      if (destination.id === id) {
-        fullDestination = destination;
-      }
-    });
-    return fullDestination;
+    const pointDestination = mockDestinations.find( (destination) => destination.id === id );
+    if (pointDestination !== undefined) {
+      return pointDestination;
+    }
+    return {};
   }
 
   #getDestinationsList() {
@@ -61,48 +57,35 @@ export class PointModel {
   }
 
   #getTypeOffersList(type) {
-    let offers = [];
-    mockOffersByType.forEach((offerBytype) => {
-      if (offerBytype.type === type) {
-        offers = offerBytype.offers;
-      }
-    });
-    return offers;
+    const offerByType = mockOffersByType.find( (offerBytype) => offerBytype.type === type );
+    if (offerByType !== undefined) {
+      return offerByType.offers;
+    }
+    return [];
   }
 
-  #getOffers(idList) {
-    const offers = [];
-    idList.forEach((id) => {
-      mockOffers.map( (offer) => {
-        if (offer.id === id) {
-          offers.push({
-            title: offer.title,
-            price: offer.price
-          });
-        }
-      });
-    });
-    return offers;
+  #getOffers(idsList) {
+    return mockOffers.filter((offer) => idsList.includes(offer.id));
   }
 
   getData(modelType) {
     if (modelType === PointModelType.ADD) {
-      return this.ChangeData;
+      return this.changeData;
     }
     if (modelType === PointModelType.ADD_WITHOUT_DESTINATONS) {
-      const clone = Object.assign({}, this.ChangeData);
+      const clone = Object.assign({}, this.changeData);
       clone.destinationsList = [];
       clone.checkedDestination = '';
       return clone;
     }
     if (modelType === PointModelType.ADD_WITHOUT_OFFERS) {
-      const clone = Object.assign({}, this.ChangeData);
+      const clone = Object.assign({}, this.changeData);
       clone.offersList = [];
       clone.checkedOffers = [];
       return clone;
     }
     if (modelType === PointModelType.EDIT) {
-      const clone = Object.assign({}, this.ChangeData);
+      const clone = Object.assign({}, this.changeData);
       return clone;
     }
     return this.data;
