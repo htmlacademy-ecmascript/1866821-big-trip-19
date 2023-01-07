@@ -1,39 +1,42 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
+import {bringFirstCharToUpperCase} from '../utils.js';
 
-function createSortTemplate() {
-  return (
+const getCheckedAttribute = ({sortName, checked}) => (sortName === checked) ? 'checked' : '';
+const getDisabledAttribute = ({sortName, disabled}) => (disabled.includes(sortName)) ? 'disabled' : '';
+
+const createItemRepeatingTemplate = ({list, checked, disabled}) =>
+  list.map((sortName) => (
+    `<div class="trip-sort__item  trip-sort__item--${sortName}">
+      <input id="sort-${sortName}" 
+        class="trip-sort__input  
+        visually-hidden" type="radio" 
+        name="trip-sort" 
+        value="sort-${sortName}" 
+        ${getCheckedAttribute({sortName, checked})}
+        ${getDisabledAttribute({sortName, disabled})}
+      >
+      <label class="trip-sort__btn" for="sort-${sortName}">
+        ${bringFirstCharToUpperCase(sortName)}
+      </label>
+    </div>`)
+  ).join('');
+
+const createFormTemplate = ({list, checked, disabled}) =>
+  (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-    <div class="trip-sort__item  trip-sort__item--day">
-      <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day">
-      <label class="trip-sort__btn" for="sort-day">Day</label>
-    </div>
-
-    <div class="trip-sort__item  trip-sort__item--event">
-      <input id="sort-event" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-event" disabled>
-      <label class="trip-sort__btn" for="sort-event">Event</label>
-    </div>
-
-    <div class="trip-sort__item  trip-sort__item--time">
-      <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time">
-      <label class="trip-sort__btn" for="sort-time">Time</label>
-    </div>
-
-    <div class="trip-sort__item  trip-sort__item--price">
-      <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price" checked>
-      <label class="trip-sort__btn" for="sort-price">Price</label>
-    </div>
-
-    <div class="trip-sort__item  trip-sort__item--offer">
-      <input id="sort-offer" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-offer" disabled>
-      <label class="trip-sort__btn" for="sort-offer">Offers</label>
-    </div>
-  </form>`
+      ${createItemRepeatingTemplate({list, checked, disabled})}
+    </form>`
   );
-}
+
 
 export default class SortView {
+
+  constructor({list, checked, disabled}) {
+    this.data = {list, checked, disabled};
+  }
+
   getTemplate() {
-    return createSortTemplate();
+    return createFormTemplate(this.data);
   }
 
   getElement() {
