@@ -17,3 +17,5 @@ export const PointModelType = {
   ADD_WITHOUT_OFFERS: 3,
   PREVIEW: 4
 };
+
+export const NO_POINTS_MESSAGE = 'Click New Event to create your first point';

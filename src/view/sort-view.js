@@ -30,24 +30,26 @@ const createFormTemplate = ({list, checked, disabled}) =>
 
 
 export default class SortView {
+  #data = null;
+  #element = null;
 
   constructor({list, checked, disabled}) {
-    this.data = {list, checked, disabled};
+    this.#data = {list, checked, disabled};
   }
 
-  getTemplate() {
-    return createFormTemplate(this.data);
+  get template() {
+    return createFormTemplate(this.#data);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

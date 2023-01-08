@@ -170,7 +170,7 @@ const createEventDetailsTemplate = ({checkedOffers, offersList, checkedDestinati
 
     </section>`);
 
-const createTemplate = ({
+const createPointChangeTemplate = ({
   basePrice,
   dateFrom,
   dateTo,
@@ -192,7 +192,9 @@ const createTemplate = ({
   );
 
 
-export default class PointChangeView {
+export default class PointEditView {
+  #data = null;
+  #element = null;
 
   constructor({
     basePrice,
@@ -206,7 +208,7 @@ export default class PointChangeView {
     checkedDestination,
     destinationsList
   }) {
-    this.data = {
+    this.#data = {
       basePrice,
       dateFrom,
       dateTo,
@@ -220,19 +222,19 @@ export default class PointChangeView {
     };
   }
 
-  getTemplate() {
-    return createTemplate(this.data);
+  get template() {
+    return createPointChangeTemplate(this.#data);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate(this.data));
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

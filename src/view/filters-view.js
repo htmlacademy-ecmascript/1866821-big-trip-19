@@ -31,24 +31,26 @@ const createFormTemplate = ({list, checked}) =>
 
 
 export default class FiltersView {
+  #data = null;
+  #element = null;
 
   constructor({list, checked}) {
-    this.data = {list, checked};
+    this.#data = {list, checked};
   }
 
-  getTemplate() {
-    return createFormTemplate(this.data);
+  get template() {
+    return createFormTemplate(this.#data);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
