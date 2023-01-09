@@ -42,9 +42,11 @@ const createTemplate = ({startDate, endDate, cost, destinations}) =>
   );
 
 export default class TripInfoView {
+  #data = null;
+  #element = null;
 
   constructor({startDate, endDate, cost, destinations}) {
-    this.data = {
+    this.#data = {
       startDate,
       endDate,
       cost,
@@ -52,19 +54,19 @@ export default class TripInfoView {
     };
   }
 
-  getTemplate() {
-    return createTemplate(this.data);
+  get template() {
+    return createTemplate(this.#data);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

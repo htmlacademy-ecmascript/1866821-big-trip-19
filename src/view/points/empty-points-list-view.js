@@ -1,17 +1,21 @@
 import { createElement } from '../../render.js';
 
-const createPointsListTemplate = () =>
+const createEmptyPointsTemplate = (message) =>
   (
-    `<ul class="trip-events__list">
-    </ul>`
+    `<p class='trip-events__msg'>${message}</p>`
   );
 
 
-export default class PointsListView {
+export default class EmptyPointsListView {
   #element = null;
+  #message = '';
+
+  constructor({message}) {
+    this.#message = message;
+  }
 
   get template() {
-    return createPointsListTemplate();
+    return createEmptyPointsTemplate(this.#message);
   }
 
   get element() {

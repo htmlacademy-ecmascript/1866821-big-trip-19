@@ -1,14 +1,19 @@
 import {FILTERS_DEFAULT_ORDER_VALUES, Filters} from '../const/filters.js';
 
 export class FiltersModel {
-  setCheckedType({checkedType}) {
-    this.data.checked = checkedType;
+  #data = {
+    list: FILTERS_DEFAULT_ORDER_VALUES.slice(),
+    checked: Filters.EVERYTHING
+  };
+
+  set data({list = FILTERS_DEFAULT_ORDER_VALUES.slice(), checked}) {
+    this.#data = {
+      list,
+      checked
+    };
   }
 
-  getData() {
-    return {
-      list: FILTERS_DEFAULT_ORDER_VALUES.slice(),
-      checked: Filters.EVERYTHING
-    };
+  get data() {
+    return this.#data;
   }
 }

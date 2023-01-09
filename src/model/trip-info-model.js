@@ -2,15 +2,23 @@ import { mockPoints } from '../mock/point.js';
 import { mockDestinations } from '../mock/destination.js';
 
 export class TripInfoModel {
+  #points = mockPoints.slice();
+  #destinations = mockDestinations.slice();
+  #data = null;
+
   constructor() {
-    this.points = mockPoints.slice();
-    this.destinations = mockDestinations.slice();
+    this.#data = {
+      startDate: this.#getStartDate(),
+      endDate: this.#getEndDate(),
+      cost: this.#getCost(),
+      destinations: this.#getDestinations()
+    };
   }
 
   #getStartDate() {
-    let startDate = this.points[0].dateFrom;
+    let startDate = this.#points[0].dateFrom;
 
-    this.points.forEach((point) => {
+    this.#points.forEach((point) => {
       if (point.dateFrom < startDate) {
         startDate = point.dateFrom;
       }
@@ -20,8 +28,8 @@ export class TripInfoModel {
   }
 
   #getEndDate() {
-    let endDate = this.points[0].dateFrom;
-    this.points.forEach((point) => {
+    let endDate = this.#points[0].dateFrom;
+    this.#points.forEach((point) => {
       if (point.dateTo > endDate) {
         endDate = point.dateTo;
       }
@@ -32,7 +40,7 @@ export class TripInfoModel {
 
   #getCost() {
     let cost = 0;
-    this.points.forEach((point) => {
+    this.#points.forEach((point) => {
       cost += Number(point.basePrice);
     });
     return cost;
@@ -42,7 +50,7 @@ export class TripInfoModel {
     let previosId = '-1';
     const destinationsIdsNoRepeat = [];
 
-    this.points.forEach((point) => {
+    this.#points.forEach((point) => {
       if (previosId !== point.destination) {
         destinationsIdsNoRepeat.push(point.destination);
       }
@@ -52,7 +60,7 @@ export class TripInfoModel {
     const destinationsNames = [];
 
     destinationsIdsNoRepeat.forEach((id) => {
-      this.destinations.forEach((destination) => {
+      this.#destinations.forEach((destination) => {
         if (destination.id === id) {
           destinationsNames.push(destination.name);
         }
@@ -61,12 +69,7 @@ export class TripInfoModel {
     return destinationsNames;
   }
 
-  getData() {
-    return {
-      startDate: this.#getStartDate(),
-      endDate: this.#getEndDate(),
-      cost: this.#getCost(),
-      destinations: this.#getDestinations()
-    };
+  get data() {
+    return this.#data;
   }
 }
