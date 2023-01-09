@@ -38,7 +38,6 @@ export class PointModel {
     };
   }
 
-
   #getDestinationTitle(id) {
     const pointDestination = mockDestinations.find( (destination) => destination.id === id );
     return pointDestination ? pointDestination.name : '';
@@ -61,7 +60,6 @@ export class PointModel {
   #getOffers(idsList) {
     return mockOffers.filter((offer) => idsList.includes(offer.id));
   }
-
 
   get previewData() {
     return this.#previewData;
