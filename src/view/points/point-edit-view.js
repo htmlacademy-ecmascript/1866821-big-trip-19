@@ -1,4 +1,4 @@
-import { createElement } from '../../render.js';
+import AbstractView from '../../framework/view/abstract-view';
 import { bringFirstCharToUpperCase } from '../../utils.js';
 import { bringToCommonEventDate } from '../../utils.js';
 
@@ -192,9 +192,10 @@ const createPointChangeTemplate = ({
   );
 
 
-export default class PointEditView {
+export default class PointEditView extends AbstractView {
   #data = null;
-  #element = null;
+  #handleFormSubmit = null;
+  #handleEditClick = null;
 
   constructor({
     basePrice,
@@ -207,7 +208,13 @@ export default class PointEditView {
     typesList,
     checkedDestination,
     destinationsList
+  },
+  {
+    onFormSubmit,
+    onEditClick
   }) {
+    super();
+
     this.#data = {
       basePrice,
       dateFrom,
@@ -220,21 +227,27 @@ export default class PointEditView {
       checkedDestination,
       destinationsList
     };
+
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
     return createPointChangeTemplate(this.#data);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit(this.#data);
+  };
 }

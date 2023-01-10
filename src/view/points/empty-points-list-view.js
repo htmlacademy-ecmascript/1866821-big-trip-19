@@ -1,4 +1,4 @@
-import { createElement } from '../../render.js';
+import AbstractView from '../../framework/view/abstract-view';
 
 const createEmptyPointsTemplate = (message) =>
   (
@@ -6,27 +6,16 @@ const createEmptyPointsTemplate = (message) =>
   );
 
 
-export default class EmptyPointsListView {
-  #element = null;
+export default class EmptyPointsListView extends AbstractView {
   #message = '';
 
   constructor({message}) {
+    super();
+
     this.#message = message;
   }
 
   get template() {
     return createEmptyPointsTemplate(this.#message);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

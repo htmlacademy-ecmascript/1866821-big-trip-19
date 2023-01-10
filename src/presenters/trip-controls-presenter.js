@@ -1,6 +1,6 @@
 import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 import { RenderPosition } from '../const/view.js';
 import { TripInfoModel } from '../model/trip-info-model.js';
 import { FiltersModel } from '../model/filters-model.js';
