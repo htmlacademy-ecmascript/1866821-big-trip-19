@@ -1,4 +1,4 @@
-import {createElement} from '../render';
+import AbstractView from '../framework/view/abstract-view';
 import dayjs from 'dayjs';
 
 const DATE_FORMAT_YEAR = 'YYYY';
@@ -26,7 +26,7 @@ const getValidDateInRange = ({startDate, endDate}) => {
 };
 
 
-const createTemplate = ({startDate, endDate, cost, destinations}) =>
+const createTripInfoTemplate = ({startDate, endDate, cost, destinations}) =>
   (
     `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
@@ -41,11 +41,12 @@ const createTemplate = ({startDate, endDate, cost, destinations}) =>
     </section>`
   );
 
-export default class TripInfoView {
+export default class TripInfoView extends AbstractView {
   #data = null;
-  #element = null;
 
   constructor({startDate, endDate, cost, destinations}) {
+    super();
+
     this.#data = {
       startDate,
       endDate,
@@ -55,18 +56,6 @@ export default class TripInfoView {
   }
 
   get template() {
-    return createTemplate(this.#data);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
+    return createTripInfoTemplate(this.#data);
   }
 }

@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import {bringFirstCharToUpperCase} from '../utils.js';
 
 const getCheckedAttribute = ({sortName, checked}) => (sortName === checked) ? 'checked' : '';
@@ -29,27 +29,16 @@ const createFormTemplate = ({list, checked, disabled}) =>
   );
 
 
-export default class SortView {
+export default class SortView extends AbstractView {
   #data = null;
-  #element = null;
 
   constructor({list, checked, disabled}) {
+    super();
+
     this.#data = {list, checked, disabled};
   }
 
   get template() {
     return createFormTemplate(this.#data);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
