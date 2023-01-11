@@ -1,4 +1,4 @@
-import {createElement} from '../../render.js';
+import AbstractView from '../../framework/view/abstract-view';
 import {
   bringFirstCharToUpperCase,
   bringToShortEventDate,
@@ -87,9 +87,10 @@ const createListTemplate = ({
   );
 
 
-export default class PointView {
+export default class PointView extends AbstractView {
   #data = null;
-  #element = null;
+  #handleEditClick = null;
+  #handleFavoriteClick = null;
 
   constructor({
     basePrice,
@@ -98,8 +99,13 @@ export default class PointView {
     destination,
     isFavorite,
     offers,
-    type
+    type,
+  },
+  {
+    onFavoriteClick,
+    onEditClick
   }) {
+    super();
 
     this.#data = {
       basePrice,
@@ -110,21 +116,25 @@ export default class PointView {
       offers,
       type
     };
+
+    this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
     return createListTemplate(this.#data);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
-    return this.#element;
-  }
 
-  removeElement() {
-    this.#element = null;
-  }
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
 }
