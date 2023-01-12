@@ -9,8 +9,8 @@ import { mockPoints } from '../mock/point.js';
 
 export default class TripPresenter {
   #headerElement = null;
-  #filtersElement = null;
-  #newEventButtonElement = null;
+  #filtersWrapElement = null;
+  #newEventButtonWrapElement = null;
   #eventsElement = null;
 
   #pointsModel = null;
@@ -23,8 +23,8 @@ export default class TripPresenter {
 
   constructor() {
     this.#headerElement = document.querySelector('.trip-main');
-    this.#filtersElement = this.#headerElement.querySelector('.trip-controls__filters');
-    this.#newEventButtonElement = this.#headerElement;
+    this.#filtersWrapElement = this.#headerElement.querySelector('.trip-controls__filters');
+    this.#newEventButtonWrapElement = this.#headerElement;
     this.#eventsElement = document.querySelector('.trip-events');
 
     this.#pointsModel = new PointsListModel({points: mockPoints.slice()});
@@ -38,8 +38,8 @@ export default class TripPresenter {
 
     this.#tripControlsPresenter = new TripControlsPresenter(
       {
-        filtersParentContainer: this.#filtersElement,
-        newEventButtonParentContainer: this.#newEventButtonElement,
+        filtersParentContainer: this.#filtersWrapElement,
+        newEventButtonParentContainer: this.#newEventButtonWrapElement,
         pointsModel: this.#pointsModel,
         onFilterPoints: this.#handlePointsChange,
         onAddButtonClick: this.#handleNewPoint
