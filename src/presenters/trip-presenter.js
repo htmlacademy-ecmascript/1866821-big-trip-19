@@ -70,7 +70,7 @@ export default class TripPresenter {
 
   #handlePointsChange = (points) => {
     if (!this.#pointsModel.isEmpty()) {
-      this.#pointsModel.points = points;
+      this.#pointsModel.points = [...points];
       this.#tripPointsPresenter.clear();
       this.#tripPointsPresenter.init();
     }
