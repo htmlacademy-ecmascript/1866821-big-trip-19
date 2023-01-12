@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
 
+const HOUR_MINUTES_INDEX = 60;
+const CURRENT_DATE = dayjs();
+
 const DATE_FORMAT_VIEW = 'MMM D';
 const DATE_FORMAT_SIMPLE = 'YYYY-MM-DD';
 const DATE_FORMAT_LONG = 'YYYY-MM-DDTHH:mm';
@@ -8,14 +11,12 @@ const DATE_FORMAT_MINUTES = 'mm';
 const DATE_FORMAT_HOURS = 'HH';
 const DATE_FORMAT_COMMON = 'DD/MM/YY HH:mm';
 
-const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
-
 const bringToShortEventDate = (date) => date ? dayjs(date).format(DATE_FORMAT_VIEW) : '';
 const bringToSimpleEventDate = (date) => date ? dayjs(date).format(DATE_FORMAT_SIMPLE) : '';
 const bringToLongEventDate = (date) => date ? dayjs(date).format(DATE_FORMAT_LONG) : '';
 const bringToTimeEventDate = (date) => date ? dayjs(date).format(DATE_FORMAT_TIME) : '';
 const bringToCommonEventDate = (date) => date ? dayjs(date).format(DATE_FORMAT_COMMON) : '';
-const getTimeDifference = ({firstDate, secondDate}) => {
+const getTimeDifference = ({firstDate, secondDate, inMinutes = false}) => {
   if (!firstDate || !secondDate) {
     return '';
   }
@@ -28,6 +29,10 @@ const getTimeDifference = ({firstDate, secondDate}) => {
 
   const hoursResult = secondAsHours - firstAsHours;
   const minutesResult = secondAsMinute > firstAsMinute ? secondAsMinute - firstAsMinute : firstAsMinute - secondAsMinute;
+
+  if (inMinutes) {
+    return (hoursResult * HOUR_MINUTES_INDEX) + minutesResult;
+  }
 
   if (hoursResult === 0) {
     return `${minutesResult}m`;
@@ -45,20 +50,20 @@ const getTimeDifference = ({firstDate, secondDate}) => {
 
 };
 
-
-const bringFirstCharToUpperCase = (inputString) => {
-  if (!inputString) {
-    return inputString;
-  }
-  return inputString[0].toUpperCase() + inputString.slice(1);
-};
+const dateInPast = (date) => dayjs(date).isBefore(CURRENT_DATE);
+const dateInFuture = (date) => dayjs(date).isAfter(CURRENT_DATE);
+const dateInPresent = (startDate, endDate) => (
+  (dateInPast(startDate) || dayjs(startDate).isSame(CURRENT_DATE)) &&
+  (dateInFuture(endDate) || dayjs(endDate).isSame(CURRENT_DATE))
+);
 
 export {
-  getRandomArrayElement,
+  dateInPast,
+  dateInFuture,
+  dateInPresent,
   bringToShortEventDate,
   bringToSimpleEventDate,
   bringToLongEventDate,
-  bringFirstCharToUpperCase,
   bringToTimeEventDate,
   getTimeDifference,
   bringToCommonEventDate

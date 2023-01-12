@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import {bringFirstCharToUpperCase} from '../utils.js';
+import {bringFirstCharToUpperCase} from '../utils/common.js';
 
 const getCheckedAttribute = ({filterName, checked}) => (filterName === checked) ? 'checked' : '';
 
@@ -12,6 +12,7 @@ const createItemRepeatingTemplate = ({list, checked}) =>
         type="radio" 
         name="trip-filter" 
         value="${filterName}" 
+        data-filter-type="${filterName}"
         ${getCheckedAttribute({filterName, checked})}
       >
       <label class="trip-filters__filter-label" for="filter-${filterName}">
@@ -32,14 +33,23 @@ const createFormTemplate = ({list, checked}) =>
 
 export default class FiltersView extends AbstractView {
   #data = null;
+  #handleFilterTypeChange = null;
 
-  constructor({list, checked}) {
+  constructor({list, checked, onFilterChange}) {
     super();
 
     this.#data = {list, checked};
+    this.#handleFilterTypeChange = onFilterChange;
+    this.element.addEventListener('click', this.#filterTypeChangeHandler);
   }
 
   get template() {
     return createFormTemplate(this.#data);
   }
+
+  #filterTypeChangeHandler = (evt) => {
+    const inputNode = evt.target.parentNode.querySelector('input');
+    evt.preventDefault();
+    this.#handleFilterTypeChange(inputNode.dataset.filterType);
+  };
 }

@@ -1,4 +1,4 @@
-import { render, replace} from '../framework/render.js';
+import { render, replace, remove} from '../framework/render.js';
 import { PointModel } from '../model/point-model.js';
 import PointView from '../view/points/point-view.js';
 import PointEditView from '../view/points/point-edit-view.js';
@@ -12,13 +12,13 @@ export default class TripPointPresenter {
   #pointModel = null;
   #pointComponent = null;
   #pointEditComponent = null;
-  #pointsListComponent = null;
+  #pointsListContainer = null;
 
   #mode = Mode.DEFAULT;
   #point = null;
 
-  constructor({pointsListComponent}) {
-    this.#pointsListComponent = pointsListComponent;
+  constructor({pointsListContainer}) {
+    this.#pointsListContainer = pointsListContainer;
   }
 
   #replaceEventToForm = () => {
@@ -61,6 +61,11 @@ export default class TripPointPresenter {
         onFormSubmit: () => {},
         onEditClick: this.#handleCloseEditClick
       });
-    render(this.#pointComponent, this.#pointsListComponent.element);
+    render(this.#pointComponent, this.#pointsListContainer.element);
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
   }
 }

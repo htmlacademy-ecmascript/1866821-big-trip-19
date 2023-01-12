@@ -1,4 +1,4 @@
-import {getRandomArrayElement} from '../utils.js';
+import {getRandomArrayElement} from '../utils/common.js';
 import {getRandomDestination} from './destination.js';
 import {getOfferByIndex} from './offer.js';
 import {PointTypes} from '../const/point.js';
@@ -6,8 +6,8 @@ import {PointTypes} from '../const/point.js';
 const mockPoints = [
   {
     basePrice: '2200',
-    dateFrom: new Date(Date.parse('2019-07-11T12:22:56.845Z')),
-    dateTo: new Date(Date.parse('2019-07-12T13:45:13.375Z')),
+    dateFrom: new Date(Date.parse('2023-01-11T12:22:56.845Z')),
+    dateTo: new Date(Date.parse('2023-01-11T13:45:13.375Z')),
     destination: getRandomDestination().id,
     id: '2',
     isFavorite: true,
@@ -16,8 +16,8 @@ const mockPoints = [
   },
   {
     basePrice: '1100',
-    dateFrom: new Date(Date.parse('2019-07-10T02:40:00.845Z')),
-    dateTo: new Date(Date.parse('2019-07-11T05:12:13.375Z')),
+    dateFrom: new Date(Date.parse('2023-01-02T05:00:00.845Z')),
+    dateTo: new Date(Date.parse('2023-01-02T05:12:13.375Z')),
     destination: getRandomDestination().id,
     id: '1',
     isFavorite: false,
@@ -25,9 +25,9 @@ const mockPoints = [
     type: PointTypes.BUS
   },
   {
-    basePrice: '4300',
-    dateFrom: new Date(Date.parse('2020-07-13T10:55:56.845Z')),
-    dateTo: new Date(Date.parse('2021-07-14T11:23:13.375Z')),
+    basePrice: '800',
+    dateFrom: new Date(Date.parse('2023-02-01T10:55:56.845Z')),
+    dateTo: new Date(Date.parse('2023-02-01T11:25:13.375Z')),
     destination: getRandomDestination().id,
     id: '4',
     isFavorite: false,
@@ -35,14 +35,24 @@ const mockPoints = [
     type: PointTypes.DRIVE
   },
   {
-    basePrice: '3300',
-    dateFrom: new Date(Date.parse('2021-07-12T22:55:56.845Z')),
-    dateTo: new Date(Date.parse('2022-09-13T23:23:13.375Z')),
+    basePrice: '300',
+    dateFrom: new Date(Date.parse('2023-01-10T21:11:10.845Z')),
+    dateTo: new Date(Date.parse('2023-01-10T23:11:13.375Z')),
     destination: getRandomDestination().id,
     id: '3',
     isFavorite: false,
     offers: [getOfferByIndex(0).id, getOfferByIndex(5).id],
     type: PointTypes.SIGHTSEEING
+  },
+  {
+    basePrice: '3400',
+    dateFrom: new Date(Date.parse('2023-01-10T21:11:10.845Z')),
+    dateTo: new Date(Date.parse('2023-03-10T23:11:13.375Z')),
+    destination: getRandomDestination().id,
+    id: '10',
+    isFavorite: false,
+    offers: [getOfferByIndex(3).id, getOfferByIndex(5).id, getOfferByIndex(2).id],
+    type: PointTypes.TAXI
   }
 ];
 

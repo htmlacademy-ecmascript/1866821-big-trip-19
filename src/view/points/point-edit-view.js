@@ -1,6 +1,6 @@
 import AbstractView from '../../framework/view/abstract-view';
-import { bringFirstCharToUpperCase } from '../../utils.js';
-import { bringToCommonEventDate } from '../../utils.js';
+import { bringFirstCharToUpperCase } from '../../utils/common.js';
+import { bringToCommonEventDate } from '../../utils/date.js';
 
 const getCheckedAttribute = ({type, checked}) => (type === checked) ? 'checked' : '';
 const getCheckedAttributeById = ({id, idArr}) => idArr.includes(id) ? 'checked' : '';
