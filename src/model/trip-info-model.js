@@ -1,12 +1,12 @@
-import { mockPoints } from '../mock/point.js';
-import { mockDestinations } from '../mock/destination.js';
-
 export class TripInfoModel {
-  #points = mockPoints.slice();
-  #destinations = mockDestinations.slice();
+  #points = null;
+  #destinations = null;
   #data = null;
 
-  constructor() {
+  constructor({pointsModel, destinations}) {
+    this.#points = [...pointsModel.points];
+    this.#destinations = [...destinations];
+
     this.#data = {
       startDate: this.#getStartDate(),
       endDate: this.#getEndDate(),

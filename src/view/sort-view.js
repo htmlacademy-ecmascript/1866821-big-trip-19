@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import {bringFirstCharToUpperCase} from '../utils.js';
+import {bringFirstCharToUpperCase} from '../utils/common.js';
 
 const getCheckedAttribute = ({sortName, checked}) => (sortName === checked) ? 'checked' : '';
 const getDisabledAttribute = ({sortName, disabled}) => (disabled.includes(sortName)) ? 'disabled' : '';
@@ -11,11 +11,14 @@ const createItemRepeatingTemplate = ({list, checked, disabled}) =>
         class="trip-sort__input  
         visually-hidden" type="radio" 
         name="trip-sort" 
-        value="sort-${sortName}" 
+        value="sort-${sortName}"
+        data-sort-type="${sortName}"
         ${getCheckedAttribute({sortName, checked})}
         ${getDisabledAttribute({sortName, disabled})}
       >
-      <label class="trip-sort__btn" for="sort-${sortName}">
+      <label class="trip-sort__btn" 
+        for="sort-${sortName}" 
+      >
         ${bringFirstCharToUpperCase(sortName)}
       </label>
     </div>`)
@@ -31,14 +34,31 @@ const createFormTemplate = ({list, checked, disabled}) =>
 
 export default class SortView extends AbstractView {
   #data = null;
+  #handleSortTypeChange = null;
 
-  constructor({list, checked, disabled}) {
+  constructor({list, checked, disabled}, {onSortTypeChange}) {
     super();
 
     this.#data = {list, checked, disabled};
+    this.#handleSortTypeChange = onSortTypeChange;
+    this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 
   get template() {
     return createFormTemplate(this.#data);
   }
+
+  #sortTypeChangeHandler = (evt) => {
+    if (!evt.target.classList.contains('trip-sort__btn')) {
+      return;
+    }
+
+    const inputNode = evt.target.parentNode.querySelector('input');
+    if (inputNode.disabled) {
+      return;
+    }
+
+    evt.preventDefault();
+    this.#handleSortTypeChange(inputNode.dataset.sortType);
+  };
 }

@@ -1,12 +1,15 @@
 import AbstractView from '../../framework/view/abstract-view';
 import {
-  bringFirstCharToUpperCase,
   bringToShortEventDate,
   bringToLongEventDate,
   bringToSimpleEventDate,
   bringToTimeEventDate,
   getTimeDifference
-} from '../../utils.js';
+} from '../../utils/date.js';
+
+import {
+  bringFirstCharToUpperCase
+} from '../../utils/common.js';
 
 
 const createOffersItemRepeatingTemplate = (offersData) =>
@@ -121,6 +124,7 @@ export default class PointView extends AbstractView {
     this.#handleFavoriteClick = onFavoriteClick;
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
   }
 
   get template() {
