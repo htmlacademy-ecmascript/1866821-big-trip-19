@@ -1,10 +1,13 @@
 import TripPointsListPresenter from '../presenters/trip-points-list-presenter.js';
-import TripControlsPresenter from '../presenters/trip-controls-presenter.js';
+import TripFiltersPresenter from '../presenters/trip-filters-presenter.js';
 import PointsListModel from '../model/points-list-model.js';
 import TripInfoPresenter from '../presenters/trip-info-presenter.js';
 import EmptyPointsListPresenter from './empty-points-list-presenter.js';
 import { mockDestinations } from '../mock/destination.js';
 import { mockPoints } from '../mock/point.js';
+import NewEventButtonView from '../view/new-event-button-view.js';
+import { EVENT_BUTTON_DEFAULT_MESSAGE } from '../const/buttons';
+import { render } from '../framework/render.js';
 
 
 export default class TripPresenter {
@@ -12,37 +15,30 @@ export default class TripPresenter {
   #filtersWrapElement = null;
   #newEventButtonWrapElement = null;
   #eventsElement = null;
+  #newEventButtonComponent = null;
 
   #pointsModel = null;
   #destinations = null;
 
   #tripInfoPresenter = null;
-  #tripControlsPresenter = null;
+  #tripFiltersPresenter = null;
   #tripPointsPresenter = null;
   #emptyPointsPresenter = null;
 
   constructor() {
     this.#headerElement = document.querySelector('.trip-main');
     this.#filtersWrapElement = this.#headerElement.querySelector('.trip-controls__filters');
-    this.#newEventButtonWrapElement = this.#headerElement;
     this.#eventsElement = document.querySelector('.trip-events');
-
-    this.#pointsModel = new PointsListModel({points: mockPoints.slice()});
-    this.#destinations = [...mockDestinations];
-
-    this.#initPresenters();
-
   }
 
   #initPresenters() {
 
-    this.#tripControlsPresenter = new TripControlsPresenter(
+    this.#tripFiltersPresenter = new TripFiltersPresenter(
       {
         filtersParentContainer: this.#filtersWrapElement,
         newEventButtonParentContainer: this.#newEventButtonWrapElement,
         pointsModel: this.#pointsModel,
-        onFilterPoints: this.#handlePointsChange,
-        onAddButtonClick: this.#handleNewPoint
+        onFilterPoints: this.#handlePointsChange
       }
     );
 
@@ -76,24 +72,39 @@ export default class TripPresenter {
     }
   };
 
+  #renderNewEventButton() {
+    this.#newEventButtonComponent = new NewEventButtonView({
+      message: EVENT_BUTTON_DEFAULT_MESSAGE,
+      onAddClick: this.#handleNewPoint
+    });
+    render(this.#newEventButtonComponent, this.#headerElement);
+  }
+
   #handleNewPoint = () => { };
 
   #initEmptyTrip() {
-    this.#tripControlsPresenter.init();
+    this.#tripFiltersPresenter.init();
     this.#emptyPointsPresenter.init();
   }
 
   #initSimpleTrip() {
     this.#tripInfoPresenter.init();
-    this.#tripControlsPresenter.init();
+    this.#tripFiltersPresenter.init();
     this.#tripPointsPresenter.init();
   }
 
   init() {
+    this.#pointsModel = new PointsListModel({points: mockPoints.slice()});
+    this.#destinations = [...mockDestinations];
+
+    this.#initPresenters();
+
     if (this.#pointsModel.isEmpty()) {
       this.#initEmptyTrip();
       return;
     }
     this.#initSimpleTrip();
+
+    this.#renderNewEventButton();
   }
 }

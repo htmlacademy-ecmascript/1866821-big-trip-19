@@ -1,12 +1,11 @@
 import {FILTERS_DEFAULT_ORDER_VALUES, Filters} from '../const/filters.js';
 import FiltersView from '../view/filters-view.js';
-import NewEventButtonView from '../view/new-event-button-view.js';
 import { render, remove } from '../framework/render.js';
 import { FiltersModel } from '../model/filters-model.js';
 import { filter } from '../utils/filters.js';
-import { EVENT_BUTTON_DEFAULT_MESSAGE } from '../const/buttons';
 
-export default class TripControlsPresenter {
+
+export default class TripFiltersPresenter {
   #points = [];
   #pointsModel = null;
   #filteredPoints = [];
@@ -14,37 +13,28 @@ export default class TripControlsPresenter {
   #filtersParentContainer = null;
   #handlePointsFilter = null;
 
-  #newEventButtonParentContainer = null;
-  #handleAddPoint = null;
-
   #filtersModel = null;
   #filtersComponent = null;
 
-  #newEventButtonComponent = null;
-
   constructor({
     filtersParentContainer,
-    newEventButtonParentContainer,
     pointsModel,
     onFilterPoints,
-    onAddButtonClick
   }) {
     this.#filtersParentContainer = filtersParentContainer;
-    this.#newEventButtonParentContainer = newEventButtonParentContainer;
     this.#pointsModel = pointsModel;
+    this.#handlePointsFilter = onFilterPoints;
+  }
+
+  init() {
+    this.#points = [...this.#pointsModel.points];
+    this.#filteredPoints = [...this.#pointsModel.points];
 
     this.#filtersModel = new FiltersModel({
       list: FILTERS_DEFAULT_ORDER_VALUES.slice(),
       checked: Filters.EVERYTHING
     });
 
-    this.#handlePointsFilter = onFilterPoints;
-    this.#handleAddPoint = onAddButtonClick;
-  }
-
-  init() {
-    this.#points = [...this.#pointsModel.points];
-    this.#filteredPoints = [...this.#pointsModel.points];
     this.#render();
   }
 
@@ -68,14 +58,6 @@ export default class TripControlsPresenter {
     remove(this.#filtersComponent);
   }
 
-  #renderNewEventButton() {
-    this.#newEventButtonComponent = new NewEventButtonView({
-      message: EVENT_BUTTON_DEFAULT_MESSAGE,
-      onAddClick: this.#handleAddPoint
-    });
-    render(this.#newEventButtonComponent, this.#newEventButtonParentContainer);
-  }
-
   #renderFilters() {
     this.#filtersComponent = new FiltersView({
       list: this.#filtersModel.data.list,
@@ -86,7 +68,6 @@ export default class TripControlsPresenter {
   }
 
   #render() {
-    this.#renderNewEventButton();
     this.#renderFilters();
   }
 
