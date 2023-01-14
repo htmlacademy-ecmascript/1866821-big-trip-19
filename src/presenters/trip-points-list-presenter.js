@@ -5,7 +5,7 @@ import { SortModel } from '../model/sort-model.js';
 import TripPointPresenter from './trip-point-presenter.js';
 import { sortPointsDayDown, sortPointsPriceDown, sortPointsDurationDown } from '../utils/point.js';
 import {SORT_DEFAULT_ORDER_VALUES, Sort} from '../const/sort.js';
-
+import { updateItem } from '../utils/common.js';
 
 export default class TripPointsListPresenter {
   #sortModel = null;
@@ -22,15 +22,15 @@ export default class TripPointsListPresenter {
   constructor({tripContainer, pointsModel}) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
+  }
 
+  init() {
     this.#sortModel = new SortModel({
       list: SORT_DEFAULT_ORDER_VALUES.slice(),
       checked: Sort.DAY,
       disabled: [Sort.EVENT, Sort.OFFERS]
     });
-  }
 
-  init() {
     this.#points = [...this.#pointsModel.points];
     this.#sourcedPoints = [...this.#pointsModel.points];
 
@@ -58,8 +58,17 @@ export default class TripPointsListPresenter {
       default:
         this.#points = [...this.#sourcedPoints];
     }
-
   }
+
+  #handlePointDataChange = (updatedPoint) => {
+    this.#points = updateItem(this.#pointsModel.points, updatedPoint);
+    this.#sourcedPoints = updateItem(this.#sourcedPoints, updatedPoint);
+    this.#pointsPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #handleModeChange = () => {
+    this.#pointsPresenters.forEach((presenter) => presenter.resetView());
+  };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#sortModel.data.checked === sortType) {
@@ -67,11 +76,8 @@ export default class TripPointsListPresenter {
     }
 
     this.#sortPoints(sortType);
-
     this.clear();
-
     this.#renderPointsList();
-
     this.#sortModel.setCheckedType({checkedType: sortType});
     this.#renderSort();
   };
@@ -88,13 +94,17 @@ export default class TripPointsListPresenter {
   #renderSort() {
     this.#sortComponent = new SortView(
       this.#sortModel.data,
-      {onSortTypeChange: this.#handleSortTypeChange}
+      {sortTypeChange: this.#handleSortTypeChange}
     );
     render(this.#sortComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderPoint(point) {
-    const pointPresenter = new TripPointPresenter({ pointsListContainer: this.#pointsListComponent});
+    const pointPresenter = new TripPointPresenter({
+      pointsListContainer: this.#pointsListComponent.element,
+      onDataChange: this.#handlePointDataChange,
+      onModeChange: this.#handleModeChange
+    });
     pointPresenter.init(point);
     this.#pointsPresenters.set(point.id, pointPresenter);
   }

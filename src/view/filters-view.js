@@ -35,11 +35,11 @@ export default class FiltersView extends AbstractView {
   #data = null;
   #handleFilterTypeChange = null;
 
-  constructor({list, checked, onFilterChange}) {
+  constructor({list, checked, filterChange}) {
     super();
 
     this.#data = {list, checked};
-    this.#handleFilterTypeChange = onFilterChange;
+    this.#handleFilterTypeChange = filterChange;
     this.element.addEventListener('click', this.#filterTypeChangeHandler);
   }
 
