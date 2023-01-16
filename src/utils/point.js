@@ -1,15 +1,12 @@
 import dayjs from 'dayjs';
 import { getTimeDifference } from './date';
 
-function sortPointsDayDown(firstPoint, secondPoint) {
-  return dayjs(secondPoint.dateFrom).diff(dayjs(firstPoint.dateFrom));
-}
+const sortPointsDayDown = (firstPoint, secondPoint) => dayjs(secondPoint.dateFrom).diff(dayjs(firstPoint.dateFrom));
 
-function sortPointsPriceDown(firstPoint, secondPoint) {
-  return secondPoint.basePrice - firstPoint.basePrice;
-}
+const sortPointsPriceDown = (firstPoint, secondPoint) => (secondPoint.basePrice - firstPoint.basePrice);
 
-function sortPointsDurationDown(firstPoint, secondPoint) {
+
+const sortPointsDurationDown = (firstPoint, secondPoint) => {
   const firstPointDuration = getTimeDifference(
     {
       firstDate: firstPoint.dateFrom,
@@ -27,7 +24,7 @@ function sortPointsDurationDown(firstPoint, secondPoint) {
   );
 
   return seconfPointDuration - firstPointDuration;
-}
+};
 
 export {
   sortPointsDayDown,

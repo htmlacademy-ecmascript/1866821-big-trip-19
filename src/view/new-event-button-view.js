@@ -21,7 +21,6 @@ export default class NewEventButtonView extends AbstractView {
   #addClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleAddClick();
-    //this.element.removeEventListener('click', this.#addClickHandler );
   };
 
   get template() {

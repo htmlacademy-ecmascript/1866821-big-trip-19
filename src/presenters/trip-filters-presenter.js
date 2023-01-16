@@ -62,7 +62,7 @@ export default class TripFiltersPresenter {
     this.#filtersComponent = new FiltersView({
       list: this.#filtersModel.data.list,
       checked: this.#filtersModel.data.checked,
-      onFilterChange: this.#handleFilterTypeChange
+      filterChange: this.#handleFilterTypeChange
     });
     render(this.#filtersComponent, this.#filtersParentContainer);
   }
@@ -70,5 +70,4 @@ export default class TripFiltersPresenter {
   #render() {
     this.#renderFilters();
   }
-
 }
