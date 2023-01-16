@@ -19,10 +19,14 @@ export default class TripPointPresenter {
   #mode = Mode.DEFAULT;
   #point = null;
 
-  constructor({pointsListContainer, onDataChange, onModeChange}) {
+  constructor({
+    pointsListContainer,
+    dataChange,
+    modeChange
+  }) {
     this.#pointsListContainer = pointsListContainer;
-    this.#handleDataChange = onDataChange;
-    this.#handleModeChange = onModeChange;
+    this.#handleDataChange = dataChange;
+    this.#handleModeChange = modeChange;
   }
 
 
@@ -36,14 +40,14 @@ export default class TripPointPresenter {
     this.#pointComponent = new PointView(
       this.#pointModel.previewData,
       {
-        onEditClick: this.#handleOpenEditClick,
-        onFavoriteClick: this.#handleFavoriteClick
+        editClick: this.#handleOpenEditClick,
+        favoriteClick: this.#handleFavoriteClick
       });
     this.#pointEditComponent = new PointEditView(
       this.#pointModel.fullData,
       {
-        onFormSubmit: this.#handleFormSubmit,
-        onEditClick: this.#handleCloseEditClick
+        formSubmit: this.#handleFormSubmit,
+        editClick: this.#handleCloseEditClick
       });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {

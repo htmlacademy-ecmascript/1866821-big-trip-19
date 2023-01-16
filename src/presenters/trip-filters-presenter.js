@@ -19,11 +19,11 @@ export default class TripFiltersPresenter {
   constructor({
     filtersParentContainer,
     pointsModel,
-    onFilterPoints,
+    filterPoints,
   }) {
     this.#filtersParentContainer = filtersParentContainer;
     this.#pointsModel = pointsModel;
-    this.#handlePointsFilter = onFilterPoints;
+    this.#handlePointsFilter = filterPoints;
   }
 
   init() {

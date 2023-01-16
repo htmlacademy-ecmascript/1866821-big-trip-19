@@ -52,7 +52,7 @@ export default class TripPresenter {
       filtersParentContainer: this.#filtersWrapElement,
       newEventButtonParentContainer: this.#newEventButtonWrapElement,
       pointsModel: this.#pointsModel,
-      onFilterPoints: this.#handlePointsChange
+      filterPoints: this.#handlePointsChange
     });
 
     this.#emptyPointsPresenter = new EmptyPointsListPresenter({parentContainer: this.#eventsElement});
@@ -85,7 +85,7 @@ export default class TripPresenter {
   #renderNewEventButton() {
     this.#newEventButtonComponent = new NewEventButtonView({
       message: EVENT_BUTTON_DEFAULT_MESSAGE,
-      onAddClick: this.#handleNewPoint
+      addClick: this.#handleNewPoint
     });
     render(this.#newEventButtonComponent, this.#headerElement);
   }
