@@ -9,11 +9,14 @@ export default class NewEventButtonView extends AbstractView {
   #message = null;
   #handleAddClick = null;
 
-  constructor({message, onAddClick}) {
+  constructor({
+    message,
+    addClick
+  }) {
     super();
 
     this.#message = message;
-    this.#handleAddClick = onAddClick;
+    this.#handleAddClick = addClick;
 
     this.element.addEventListener('click', this.#addClickHandler );
   }

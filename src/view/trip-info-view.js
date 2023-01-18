@@ -44,7 +44,12 @@ const createTripInfoTemplate = ({startDate, endDate, cost, destinations}) =>
 export default class TripInfoView extends AbstractView {
   #data = null;
 
-  constructor({startDate, endDate, cost, destinations}) {
+  constructor({
+    startDate,
+    endDate,
+    cost,
+    destinations
+  }) {
     super();
 
     this.#data = {

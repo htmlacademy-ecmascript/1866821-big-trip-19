@@ -19,7 +19,10 @@ export default class TripPointsListPresenter {
 
   #pointsPresenters = new Map();
 
-  constructor({tripContainer, pointsModel}) {
+  constructor({
+    tripContainer,
+    pointsModel
+  }) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
   }
@@ -102,8 +105,8 @@ export default class TripPointsListPresenter {
   #renderPoint(point) {
     const pointPresenter = new TripPointPresenter({
       pointsListContainer: this.#pointsListComponent.element,
-      onDataChange: this.#handlePointDataChange,
-      onModeChange: this.#handleModeChange
+      dataChange: this.#handlePointDataChange,
+      modeChange: this.#handleModeChange
     });
     pointPresenter.init(point);
     this.#pointsPresenters.set(point.id, pointPresenter);

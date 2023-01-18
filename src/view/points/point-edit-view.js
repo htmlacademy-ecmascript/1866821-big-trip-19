@@ -210,8 +210,8 @@ export default class PointEditView extends AbstractView {
     destinationsList
   },
   {
-    onFormSubmit,
-    onEditClick
+    formSubmit,
+    editClick
   }) {
     super();
 
@@ -228,8 +228,8 @@ export default class PointEditView extends AbstractView {
       destinationsList
     };
 
-    this.#handleFormSubmit = onFormSubmit;
-    this.#handleEditClick = onEditClick;
+    this.#handleFormSubmit = formSubmit;
+    this.#handleEditClick = editClick;
 
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
