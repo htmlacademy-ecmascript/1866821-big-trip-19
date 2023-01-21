@@ -96,6 +96,7 @@ export default class PointView extends AbstractView {
   #handleFavoriteClick = null;
 
   constructor({
+    id,
     basePrice,
     dateFrom,
     dateTo,
@@ -109,8 +110,8 @@ export default class PointView extends AbstractView {
     editClick
   }) {
     super();
-
     this.#data = {
+      id,
       basePrice,
       dateFrom,
       dateTo,
