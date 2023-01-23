@@ -1,6 +1,8 @@
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
 import { bringFirstCharToUpperCase } from '../../utils/common.js';
-import { bringToCommonEventDate } from '../../utils/date.js';
+import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT__DATE_SIMPLE, dateInPast, datesIsSame } from '../../utils/date.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const getCheckedAttribute = ({type, checked}) => (type === checked) ? 'checked' : '';
 const getCheckedAttributeById = ({id, idsArr}) => idsArr.includes(id) ? 'checked' : '';
@@ -76,10 +78,26 @@ const createEventFieldTemplate = ({checkedType, checkedDestination, destinations
 const createTimeIntervalTemplate = ({dateFrom, dateTo}) => (
   `<div class="event__field-group  event__field-group--time">
     <label class="visually-hidden" for="event-start-time-1">From</label>
-    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"value="${bringToCommonEventDate(dateFrom)}">
+    <input 
+      class="event__input 
+      event__input--time" 
+      id="event-start-time-1" 
+      type="text" 
+      name="event-start-time"
+      ${dateInPast(dateFrom) ? 'disabled' : ''} 
+      value="${bringToCommonEventDate(dateFrom)}"
+    >
     &mdash;
     <label class="visually-hidden" for="event-end-time-1">To</label>
-    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${bringToCommonEventDate(dateTo)}">
+    <input 
+      class="event__input 
+      event__input--time" 
+      id="event-end-time-1" 
+      type="text" 
+      name="event-end-time" 
+      ${dateInPast(dateTo) ? 'disabled' : ''} 
+      value="${bringToCommonEventDate(dateTo)}"
+    >
   </div>`
 );
 
@@ -169,13 +187,17 @@ const createPhotoRepeatingTemplate = ({pictures}) =>
     `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)
   ).join('');
 
-const createDestinationPhotosTemplate = ({checkedDestination}) => (
-  `<div class="event__photos-container">
-    <div class="event__photos-tape">
-      ${createPhotoRepeatingTemplate({pictures: checkedDestination.pictures})}
-    </div>
-  </div>`
-);
+const createDestinationPhotosTemplate = ({checkedDestination}) => {
+  if (checkedDestination) {
+    return (
+      `<div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${createPhotoRepeatingTemplate({pictures: checkedDestination.pictures})}
+        </div>
+      </div>`
+    );
+  }
+};
 
 const createDestinationTemplate = ({checkedDestination}) => (
   `<section class="event__section  event__section--destination">
@@ -223,6 +245,8 @@ const createPointChangeTemplate = ({
 export default class PointEditView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleEditClick = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor({
     id,
@@ -273,7 +297,8 @@ export default class PointEditView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(PointEditView.parseStateToPoint(this._state));
+    const sameDate = datesIsSame(this._state.dateFrom, this._state.dateFromBase) || datesIsSame(this._state.dateTo, this._state.dateToBase);
+    this.#handleFormSubmit({updatedPoint: PointEditView.parseStateToPoint(this._state), resort: !sameDate});
   };
 
   _restoreHandlers() {
@@ -282,9 +307,12 @@ export default class PointEditView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('focusout', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameFillingHandler);
+
     if (this._state.offersList.length !== 0) {
       this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler );
     }
+
+    this.#setDatepickers();
   }
 
   #typeChangeHandler = (evt) => {
@@ -330,6 +358,60 @@ export default class PointEditView extends AbstractStatefulView {
     }
   };
 
+  #setDatepickers() {
+    if (this._state.dateFrom && this._state.dateTo) {
+      this.#datepickerFrom = flatpickr(
+        this.element.querySelector('#event-start-time-1'),
+        {
+          dateFormat: 'd/m/y H:i',
+          enableTime: true,
+          time_24hr: true,
+          minDate: CURRENT__DATE_SIMPLE,
+          defaultDate: this._state.dateFrom,
+          onClose: this.#dateFromCloseHandler
+        },
+      );
+      this.#datepickerTo = flatpickr(
+        this.element.querySelector('#event-end-time-1'),
+        {
+          dateFormat: 'd/m/y H:i',
+          enableTime: true,
+          time_24hr: true,
+          minDate: this._state.dateFrom,
+          defaultDate: this._state.dateTo,
+          onClose: this.#dateToCloseHandler
+        },
+      );
+    }
+  }
+
+  #dateFromCloseHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+      dateTo: firstDateIsAfterSecond(userDate, this._state.dateTo) ? userDate : this._state.dateTo
+    });
+  };
+
+  #dateToCloseHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
   reset(point) {
     this.updateElement(
       PointEditView.parsePointToState(point)
@@ -337,13 +419,17 @@ export default class PointEditView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {
+      ...point,
+      dateFromBase: point.dateFrom,
+      dateToBase: point.dateTo
+    };
   }
 
   static parseStateToPoint(state) {
     const point = {
       id: state.id,
-      basePrice: state. basePrice,
+      basePrice: state.basePrice,
       dateFrom: state.dateFrom,
       dateTo: state.dateTo,
       destination: state.checkedDestinationId,

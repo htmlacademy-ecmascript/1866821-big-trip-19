@@ -98,11 +98,11 @@ export default class TripPointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange({updatedPoint: {...this.#point, isFavorite: !this.#point.isFavorite}});
   };
 
-  #handleFormSubmit = (point) => {
-    this.#handleDataChange({...point});
+  #handleFormSubmit = ({updatedPoint, resort}) => {
+    this.#handleDataChange({updatedPoint, resort});
     this.#replaceFormToEvent();
   };
 

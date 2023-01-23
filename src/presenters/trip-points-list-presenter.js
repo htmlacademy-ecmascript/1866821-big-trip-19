@@ -63,18 +63,19 @@ export default class TripPointsListPresenter {
     }
   }
 
-  #handlePointDataChange = (updatedPoint) => {
+  #handlePointDataChange = ({updatedPoint, resort = false}) => {
     this.#points = updateItem(this.#pointsModel.points, updatedPoint);
     this.#sourcedPoints = updateItem(this.#sourcedPoints, updatedPoint);
     this.#pointsPresenters.get(updatedPoint.id).init(updatedPoint);
+    this.#handleSortTypeChange(this.#sortModel.data.checked, resort);
   };
 
   #handleModeChange = () => {
     this.#pointsPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleSortTypeChange = (sortType) => {
-    if (this.#sortModel.data.checked === sortType) {
+  #handleSortTypeChange = (sortType, resort = false) => {
+    if (this.#sortModel.data.checked === sortType && !resort) {
       return;
     }
 

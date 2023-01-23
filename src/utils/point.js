@@ -11,7 +11,7 @@ const sortPointsDurationDown = (firstPoint, secondPoint) => {
     {
       firstDate: firstPoint.dateFrom,
       secondDate: firstPoint.dateTo,
-      inMinutes: true
+      isSimple: true
     }
   );
 
@@ -19,10 +19,9 @@ const sortPointsDurationDown = (firstPoint, secondPoint) => {
     {
       firstDate: secondPoint.dateFrom,
       secondDate: secondPoint.dateTo,
-      inMinutes: true
+      isSimple: true
     }
   );
-
   return seconfPointDuration - firstPointDuration;
 };
 
