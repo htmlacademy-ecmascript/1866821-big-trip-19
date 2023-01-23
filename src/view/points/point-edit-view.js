@@ -365,7 +365,6 @@ export default class PointEditView extends AbstractStatefulView {
         {
           dateFormat: 'd/m/y H:i',
           enableTime: true,
-          time_24hr: true,
           minDate: CURRENT__DATE_SIMPLE,
           defaultDate: this._state.dateFrom,
           onClose: this.#dateFromCloseHandler
@@ -376,7 +375,6 @@ export default class PointEditView extends AbstractStatefulView {
         {
           dateFormat: 'd/m/y H:i',
           enableTime: true,
-          time_24hr: true,
           minDate: this._state.dateFrom,
           defaultDate: this._state.dateTo,
           onClose: this.#dateToCloseHandler
