@@ -1,6 +1,5 @@
 import { mockDestinations } from '../mock/destination.js';
-import { mockOffers } from '../mock/offer.js';
-import { mockOffersByType } from '../mock/offersByType.js';
+
 import { PointTypes } from '../const/point.js';
 
 export class PointModel {
@@ -8,6 +7,7 @@ export class PointModel {
   #fullData = null;
 
   constructor({
+    id,
     basePrice,
     dateFrom,
     dateTo,
@@ -15,26 +15,35 @@ export class PointModel {
     isFavorite,
     offers,
     type
-  }) {
+  },
+  offersData,
+  destinationsList
+  ) {
     this.#previewData = {
+      id,
       basePrice,
       dateFrom,
       dateTo,
       destination: this.#getDestinationTitle(destination),
       isFavorite,
-      offers: this.#getOffers(offers),
+      offers: this.#getOffers({
+        checkedOffersIds: offers,
+        offersList: offersData.offers
+      }),
       type
     };
     this.#fullData = {
+      id,
       basePrice,
       dateFrom,
       dateTo,
-      checkedOffers: offers,
-      offersList: this.#getTypeOffersList(type),
+      isFavorite,
+      checkedOffersIds: offers,
+      offersList: offersData.offersByType,
       checkedType: type,
       typesList: PointTypes,
-      checkedDestination: this.#getFullDestination(destination),
-      destinationsList: this.#getDestinationsList(),
+      checkedDestinationId: destination,
+      destinationsList
     };
   }
 
@@ -43,22 +52,8 @@ export class PointModel {
     return pointDestination ? pointDestination.name : '';
   }
 
-  #getFullDestination(id) {
-    const pointDestination = mockDestinations.find( (destination) => destination.id === id );
-    return pointDestination ? pointDestination : {};
-  }
-
-  #getDestinationsList() {
-    return mockDestinations;
-  }
-
-  #getTypeOffersList(type) {
-    const offerByType = mockOffersByType.find( (offerBytype) => offerBytype.type === type );
-    return offerByType ? offerByType.offers : [];
-  }
-
-  #getOffers(idsList) {
-    return mockOffers.filter((offer) => idsList.includes(offer.id));
+  #getOffers({checkedOffersIds, offersList}) {
+    return offersList.filter((offer) => checkedOffersIds.includes(offer.id));
   }
 
   get previewData() {

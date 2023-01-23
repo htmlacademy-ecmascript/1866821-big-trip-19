@@ -2,6 +2,11 @@ import { render, replace, remove} from '../framework/render.js';
 import { PointModel } from '../model/point-model.js';
 import PointView from '../view/points/point-view.js';
 import PointEditView from '../view/points/point-edit-view.js';
+import { OffersModel } from '../model/offers-model.js';
+import { mockOffersByType } from '../mock/offersByType.js';
+import { DestinationsModel } from '../model/destinations-model.js';
+import { mockDestinations } from '../mock/destination.js';
+import { mockOffers } from '../mock/offer.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -32,11 +37,12 @@ export default class TripPointPresenter {
 
   init(point) {
     this.#point = point;
-
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
+    const offersModel = new OffersModel({offersByType: [...mockOffersByType], offers: [...mockOffers]});
+    const destinationsModel = new DestinationsModel({destinations: [...mockDestinations]});
 
-    this.#pointModel = new PointModel(this.#point);
+    this.#pointModel = new PointModel(this.#point, offersModel.data, destinationsModel.data);
     this.#pointComponent = new PointView(
       this.#pointModel.previewData,
       {
@@ -87,6 +93,7 @@ export default class TripPointPresenter {
   };
 
   #handleCloseEditClick = () => {
+    this.#pointEditComponent.reset(this.#pointModel.fullData);
     this.#replaceFormToEvent();
   };
 
@@ -94,13 +101,15 @@ export default class TripPointPresenter {
     this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
-  #handleFormSubmit = () => {
-    this.#handleDataChange({...this.#point});
+  #handleFormSubmit = (point) => {
+    this.#handleDataChange({...point});
+    this.#replaceFormToEvent();
   };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#pointModel.fullData);
       this.#replaceFormToEvent();
     }
   };

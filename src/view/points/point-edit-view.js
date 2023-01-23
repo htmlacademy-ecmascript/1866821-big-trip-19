@@ -1,16 +1,27 @@
-import AbstractView from '../../framework/view/abstract-view';
+import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
 import { bringFirstCharToUpperCase } from '../../utils/common.js';
 import { bringToCommonEventDate } from '../../utils/date.js';
 
 const getCheckedAttribute = ({type, checked}) => (type === checked) ? 'checked' : '';
-const getCheckedAttributeById = ({id, idArr}) => idArr.includes(id) ? 'checked' : '';
+const getCheckedAttributeById = ({id, idsArr}) => idsArr.includes(id) ? 'checked' : '';
 
 const createEventTypeItemsRepeatingTemplate = ({checkedType, typesList}) =>
 
   Object.keys(typesList).map((type) => (
     `<div class="event__type-item">
-      <input id="event-type-${typesList[type]}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typesList[type]}" ${getCheckedAttribute({checked: checkedType, type: typesList[type]})}>
-      <label class="event__type-label  event__type-label--${typesList[type]}" for="event-type-${typesList[type]}-1">${bringFirstCharToUpperCase(typesList[type])}</label>
+      <input id="event-type-${typesList[type]}-1" 
+        class="event__type-input  visually-hidden" 
+        type="radio" 
+        name="event-type" 
+        value="${typesList[type]}" 
+        ${getCheckedAttribute({checked: checkedType, type: typesList[type]})}
+      >
+      <label class="event__type-label 
+        event__type-label--${typesList[type]}" 
+        for="event-type-${typesList[type]}-1"
+      >
+        ${bringFirstCharToUpperCase(typesList[type])}
+      </label>
     </div>`)
   ).join('');
 
@@ -34,9 +45,11 @@ const createEventTypeTemplate = ({checkedType, typesList}) => (
 );
 
 const createEventFieldOptionsRepeatingTemplate = ({destinationsList}) =>
-
   Object.values(destinationsList).map((destination) => (
-    `<option value="${bringFirstCharToUpperCase(destination.name)}"></option>`)
+    `<option data-destination-id="${destination.id}" 
+      id="${bringFirstCharToUpperCase(destination.name)}" 
+      value="${bringFirstCharToUpperCase(destination.name)}"
+    ></option>`)
   ).join('');
 
 
@@ -45,7 +58,14 @@ const createEventFieldTemplate = ({checkedType, checkedDestination, destinations
     <label class="event__label  event__type-output" for="event-destination-1">
       ${bringFirstCharToUpperCase(checkedType)}
     </label>
-    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${bringFirstCharToUpperCase(checkedDestination.name)}" list="destination-list-1">
+    <input class="event__input 
+      event__input--destination"
+      id="event-destination-1" 
+      type="text" 
+      name="event-destination" 
+      value="${bringFirstCharToUpperCase(checkedDestination.name)}" 
+      list="destination-list-1"
+    >
     <datalist id="destination-list-1">
         ${createEventFieldOptionsRepeatingTemplate({destinationsList})}
     </datalist>
@@ -75,8 +95,8 @@ const createPriceTemplate = ({basePrice}) => (
 
 const createHeaderBtnsTemplate = () => (
   `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-  <button class="event__reset-btn" type="reset">Delete</button>
-  <button class="event__rollup-btn" type="button">
+   <button class="event__reset-btn" type="reset">Delete</button>
+   <button class="event__rollup-btn" type="button">
     <span class="visually-hidden">Open event</span>
   </button>`
 );
@@ -108,14 +128,18 @@ const getLastWord = (str) => {
   return strAsArray[strAsArray.length - 1];
 };
 
-const createOffersItemRepeatingTemplate = ({offersList, checkedOffers}) => (
-  Object.values(offersList).map((offer) => (
-    `<div class="event__offer-selector">
+const createOffersItemRepeatingTemplate = ({offersList, checkedOffersIds, checkedType}) => {
+  const currentOfferByType = offersList.find((offerByType) => offerByType.type === checkedType);
+
+  return (
+    currentOfferByType.offers.map((offer) => (
+      `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" 
             id="event-offer-${getLastWord(offer.title)}-1" 
             type="checkbox" 
             name="event-offer-${getLastWord(offer.title)}"
-           ${getCheckedAttributeById({id: offer.id, idArr: checkedOffers})}
+            data-offer-id="${offer.id}"
+           ${getCheckedAttributeById({id: offer.id, idsArr: checkedOffersIds})}
       >
       <label class="event__offer-label" for="event-offer-${getLastWord(offer.title)}-1">
         <span class="event__offer-title">${bringFirstCharToUpperCase(offer.title)}</span>
@@ -123,16 +147,17 @@ const createOffersItemRepeatingTemplate = ({offersList, checkedOffers}) => (
         <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`)
-  ).join('')
-);
+    ).join('')
+  );
+};
 
-const createOffersTemplate = ({offersList, checkedOffers}) => (
+const createOffersTemplate = ({offersList, checkedOffersIds, checkedType}) => (
   `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     
     <div class="event__available-offers">
 
-      ${createOffersItemRepeatingTemplate({offersList, checkedOffers})}
+      ${createOffersItemRepeatingTemplate({offersList, checkedOffersIds, checkedType})}
 
     </div>
   </section>`
@@ -162,10 +187,10 @@ const createDestinationTemplate = ({checkedDestination}) => (
   </section>`
 );
 
-const createEventDetailsTemplate = ({checkedOffers, offersList, checkedDestination}) =>
+const createEventDetailsTemplate = ({checkedOffersIds, offersList, checkedDestination, checkedType}) =>
   (`<section class="event__details">
       
-      ${ offersList.length !== 0 ? createOffersTemplate({checkedOffers, offersList}) : ''}
+      ${ offersList.length !== 0 ? createOffersTemplate({checkedOffersIds, offersList, checkedType}) : ''}
       ${ checkedDestination !== '' ? createDestinationTemplate({checkedDestination}) : ''}
 
     </section>`);
@@ -174,71 +199,71 @@ const createPointChangeTemplate = ({
   basePrice,
   dateFrom,
   dateTo,
-  checkedOffers,
+  checkedOffersIds,
   offersList,
   checkedType,
   typesList,
-  checkedDestination,
+  checkedDestinationId,
   destinationsList
-}) =>
-  (
+}) => {
+  const checkedDestination = destinationsList.find((destination) => destination.id === checkedDestinationId);
+
+  return (
     `<li class="trip-events__item">
         <form class="event event--edit" action="#" method="post">
             ${createEventHeaderInfoTemplate({basePrice, dateFrom, dateTo, checkedType, typesList, checkedDestination, destinationsList})}
-            ${createEventDetailsTemplate({checkedOffers, offersList, checkedDestination})}            
+            ${createEventDetailsTemplate({checkedOffersIds, offersList, checkedDestination, checkedType})}            
         </form>
 
     </li>`
   );
+};
 
 
-export default class PointEditView extends AbstractView {
-  #data = null;
+export default class PointEditView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleEditClick = null;
 
   constructor({
+    id,
     basePrice,
     dateFrom,
     dateTo,
     isFavorite,
-    checkedOffers,
+    checkedOffersIds,
     offersList,
     checkedType,
     typesList,
-    checkedDestination,
+    checkedDestinationId,
     destinationsList
   },
   {
     formSubmit,
     editClick
   }) {
-    super();
 
-    this.#data = {
+    super();
+    this._setState(PointEditView.parsePointToState({
+      id,
       basePrice,
       dateFrom,
       dateTo,
       isFavorite,
-      checkedOffers,
+      checkedOffersIds,
       offersList,
       checkedType,
       typesList,
-      checkedDestination,
+      checkedDestinationId,
       destinationsList
-    };
+    }));
 
     this.#handleFormSubmit = formSubmit;
     this.#handleEditClick = editClick;
-
-    this.element.querySelector('form')
-      .addEventListener('submit', this.#formSubmitHandler);
-
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createPointChangeTemplate(this.#data);
+    return createPointChangeTemplate(this._state);
   }
 
   #editClickHandler = (evt) => {
@@ -248,6 +273,85 @@ export default class PointEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#data);
+    this.#handleFormSubmit(PointEditView.parseStateToPoint(this._state));
   };
+
+  _restoreHandlers() {
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('focusout', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameFillingHandler);
+    if (this._state.offersList.length !== 0) {
+      this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler );
+    }
+  }
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      checkedType: evt.target.value,
+    });
+  };
+
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+    const currentOfferId = Number(evt.target.dataset.offerId);
+
+    const idIndex = this._state.checkedOffersIds.indexOf(currentOfferId);
+
+    if (evt.target.checked && (idIndex === -1)){
+      this._state.checkedOffersIds.push(currentOfferId);
+      return;
+    }
+
+    if (!evt.target.checked && (idIndex !== -1)){
+      this._state.checkedOffersIds.splice(idIndex, 1);
+    }
+  };
+
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+    const currentDestinationOption = document.querySelector(`#destination-list-1 #${evt.target.value}`);
+
+    this.updateElement({
+      checkedDestinationId: currentDestinationOption.dataset.destinationId
+    });
+  };
+
+  #getDestinationsByValue = (userDestinaton) => this._state.destinationsList.filter((destination) => Object.values(destination).includes(userDestinaton));
+
+  #destinationNameFillingHandler = (evt) => {
+    const userDestinaton = evt.target.value;
+    evt.preventDefault();
+    if(this.#getDestinationsByValue(userDestinaton).length === 0) {
+      evt.target.value = '';
+    }
+  };
+
+  reset(point) {
+    this.updateElement(
+      PointEditView.parsePointToState(point)
+    );
+  }
+
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    const point = {
+      id: state.id,
+      basePrice: state. basePrice,
+      dateFrom: state.dateFrom,
+      dateTo: state.dateTo,
+      destination: state.checkedDestinationId,
+      isFavorite: state.isFavorite,
+      offers: state.checkedOffersIds,
+      type: state.checkedType
+    };
+
+    return point;
+  }
 }
