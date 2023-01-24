@@ -6,8 +6,8 @@ import {PointTypes} from '../const/point.js';
 const mockPoints = [
   {
     basePrice: '2200',
-    dateFrom: new Date(Date.parse('2023-01-11T12:22:56.845Z')),
-    dateTo: new Date(Date.parse('2023-01-11T13:45:13.375Z')),
+    dateFrom: new Date(Date.parse('2023-02-11T12:22:56.845Z')),
+    dateTo: new Date(Date.parse('2023-03-11T13:45:13.375Z')),
     destination: getRandomDestination().id,
     id: '2',
     isFavorite: true,
@@ -16,8 +16,8 @@ const mockPoints = [
   },
   {
     basePrice: '1100',
-    dateFrom: new Date(Date.parse('2023-01-02T05:00:00.845Z')),
-    dateTo: new Date(Date.parse('2023-01-02T05:12:13.375Z')),
+    dateFrom: new Date(Date.parse('2023-03-10T05:00:00.845Z')),
+    dateTo: new Date(Date.parse('2023-03-10T05:12:13.375Z')),
     destination: getRandomDestination().id,
     id: '1',
     isFavorite: false,
