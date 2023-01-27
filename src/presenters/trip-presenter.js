@@ -4,10 +4,10 @@ import PointsListModel from '../model/points-list-model.js';
 import TripInfoPresenter from '../presenters/trip-info-presenter.js';
 import EmptyPointsListPresenter from './empty-points-list-presenter.js';
 import { mockDestinations } from '../mock/destination.js';
-import { mockPoints } from '../mock/point.js';
 import NewEventButtonView from '../view/new-event-button-view.js';
 import { EVENT_BUTTON_DEFAULT_MESSAGE } from '../const/buttons';
 import { render } from '../framework/render.js';
+import { FiltersModel } from '../model/filters-model.js';
 
 
 export default class TripPresenter {
@@ -17,6 +17,7 @@ export default class TripPresenter {
   #eventsElement = null;
   #newEventButtonComponent = null;
 
+  #filtersModel = null;
   #pointsModel = null;
   #destinations = null;
 
@@ -32,8 +33,9 @@ export default class TripPresenter {
   }
 
   init() {
-    this.#pointsModel = new PointsListModel({points: mockPoints.slice()});
+    this.#pointsModel = new PointsListModel();
     this.#destinations = [...mockDestinations];
+    this.#filtersModel = new FiltersModel();
 
     this.#initPresenters();
 
@@ -47,12 +49,11 @@ export default class TripPresenter {
   }
 
   #initPresenters() {
-
     this.#tripFiltersPresenter = new TripFiltersPresenter({
       filtersParentContainer: this.#filtersWrapElement,
       newEventButtonParentContainer: this.#newEventButtonWrapElement,
       pointsModel: this.#pointsModel,
-      filterPoints: this.#handlePointsChange
+      filtersModel: this.#filtersModel
     });
 
     this.#emptyPointsPresenter = new EmptyPointsListPresenter({parentContainer: this.#eventsElement});
@@ -69,7 +70,8 @@ export default class TripPresenter {
 
     this.#tripPointsPresenter = new TripPointsListPresenter({
       tripContainer: this.#eventsElement,
-      pointsModel: this.#pointsModel
+      pointsModel: this.#pointsModel,
+      filtersModel: this.#filtersModel
     });
   }
 
@@ -101,5 +103,9 @@ export default class TripPresenter {
     this.#tripInfoPresenter.init();
     this.#tripFiltersPresenter.init();
     this.#tripPointsPresenter.init();
+  }
+
+  get points() {
+    return this.#pointsModel.points;
   }
 }

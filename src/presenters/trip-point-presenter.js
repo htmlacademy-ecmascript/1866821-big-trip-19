@@ -7,6 +7,8 @@ import { mockOffersByType } from '../mock/offersByType.js';
 import { DestinationsModel } from '../model/destinations-model.js';
 import { mockDestinations } from '../mock/destination.js';
 import { mockOffers } from '../mock/offer.js';
+import { UserAction, UpdateType } from '../const/common.js';
+import { isDatesEqual } from '../utils/date.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -14,12 +16,14 @@ const Mode = {
 };
 
 export default class TripPointPresenter {
-  #pointModel = null;
-  #pointComponent = null;
-  #pointEditComponent = null;
   #pointsListContainer = null;
   #handleDataChange = null;
   #handleModeChange = null;
+
+  #pointModel = null;
+  #pointComponent = null;
+  #pointEditComponent = null;
+
 
   #mode = Mode.DEFAULT;
   #point = null;
@@ -37,8 +41,10 @@ export default class TripPointPresenter {
 
   init(point) {
     this.#point = point;
+
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
+
     const offersModel = new OffersModel({offersByType: [...mockOffersByType], offers: [...mockOffers]});
     const destinationsModel = new DestinationsModel({destinations: [...mockDestinations]});
 
@@ -75,6 +81,18 @@ export default class TripPointPresenter {
 
   }
 
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditComponent.reset(this.#point);
+      this.#replaceFormToEvent();
+    }
+  }
+
   #replaceEventToForm = () => {
     replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -88,23 +106,6 @@ export default class TripPointPresenter {
     this.#mode = Mode.DEFAULT;
   };
 
-  #handleOpenEditClick = () => {
-    this.#replaceEventToForm();
-  };
-
-  #handleCloseEditClick = () => {
-    this.#pointEditComponent.reset(this.#pointModel.fullData);
-    this.#replaceFormToEvent();
-  };
-
-  #handleFavoriteClick = () => {
-    this.#handleDataChange({updatedPoint: {...this.#point, isFavorite: !this.#point.isFavorite}});
-  };
-
-  #handleFormSubmit = ({updatedPoint, resort}) => {
-    this.#handleDataChange({updatedPoint, resort});
-    this.#replaceFormToEvent();
-  };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
@@ -114,14 +115,40 @@ export default class TripPointPresenter {
     }
   };
 
-  resetView() {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#replaceFormToEvent();
-    }
-  }
+  #handleOpenEditClick = () => {
+    this.#replaceEventToForm();
+  };
 
-  destroy() {
-    remove(this.#pointComponent);
-    remove(this.#pointEditComponent);
-  }
+  #handleCloseEditClick = () => {
+    this.#pointEditComponent.reset(this.#pointModel.fullData);
+    this.#replaceFormToEvent();
+  };
+
+
+  #handleFavoriteClick = () => {
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
+  };
+
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate = !isDatesEqual(this.#point.dueDate, update.dueDate);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
+    this.#replaceFormToEvent();
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  };
 }

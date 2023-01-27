@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
 import { bringFirstCharToUpperCase } from '../../utils/common.js';
-import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT__DATE_SIMPLE, dateInPast, datesIsSame } from '../../utils/date.js';
+import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT__DATE_SIMPLE, dateInPast } from '../../utils/date.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -297,8 +297,7 @@ export default class PointEditView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    const sameDate = datesIsSame(this._state.dateFrom, this._state.dateFromBase) || datesIsSame(this._state.dateTo, this._state.dateToBase);
-    this.#handleFormSubmit({updatedPoint: PointEditView.parseStateToPoint(this._state), resort: !sameDate});
+    this.#handleFormSubmit(PointEditView.parseStateToPoint(this._state));
   };
 
   _restoreHandlers() {
@@ -417,11 +416,7 @@ export default class PointEditView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {
-      ...point,
-      dateFromBase: point.dateFrom,
-      dateToBase: point.dateTo
-    };
+    return {...point};
   }
 
   static parseStateToPoint(state) {

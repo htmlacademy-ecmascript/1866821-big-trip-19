@@ -45,6 +45,8 @@ const getDidderence = (firstDate, secondDate) => {
   return dayjs.duration(dayjs(secondDate).diff(firstDate));
 };
 
+const isDatesEqual = (firstDate, secondDate) => (firstDate === null && secondDate === null) || dayjs(firstDate).isSame(secondDate, 'D');
+
 const getTimeDifference = ({firstDate, secondDate, isSimple = false}) => {
   if (!firstDate || !secondDate) {
     return '';
@@ -76,6 +78,7 @@ const dateInPresent = (startDate, endDate) => (
 const datesIsSame = (firstDate, secondDate) => dayjs(firstDate).isSame(dayjs(secondDate));
 
 export {
+  isDatesEqual,
   datesIsSame,
   dateInPast,
   dateInFuture,
