@@ -1,3 +1,5 @@
+import {nanoid} from 'nanoid';
+
 export const PointTypes = {
   TAXI: 'taxi',
   BUS: 'bus',
@@ -10,12 +12,13 @@ export const PointTypes = {
   RESTAURANT: 'restaurant'
 };
 
-export const PointModelType = {
-  EDIT: 0,
-  ADD: 1,
-  ADD_WITHOUT_DESTINATONS: 2,
-  ADD_WITHOUT_OFFERS: 3,
-  PREVIEW: 4
+export const BLANK_POINT = {
+  id: `${nanoid()}`,
+  basePrice: '0',
+  dateFrom: new Date(Date.now()),
+  dateTo: new Date(Date.now()),
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  type: PointTypes.CHECK_IN
 };
-
-export const NO_POINTS_MESSAGE = 'Click New Event to create your first point';

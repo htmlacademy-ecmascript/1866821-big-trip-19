@@ -42,7 +42,7 @@ export class PointModel {
       offersList: offersData.offersByType,
       checkedType: type,
       typesList: PointTypes,
-      checkedDestinationId: destination,
+      checkedDestinationId: destination ? destination : destinationsList[0].id,
       destinationsList
     };
   }

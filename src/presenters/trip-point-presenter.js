@@ -59,7 +59,8 @@ export default class TripPointPresenter {
       this.#pointModel.fullData,
       {
         formSubmit: this.#handleFormSubmit,
-        editClick: this.#handleCloseEditClick
+        editClick: this.#handleCloseEditClick,
+        deleteClick: this.#handleDeleteClick
       });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {

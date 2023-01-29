@@ -8,6 +8,7 @@ import { SORT_DEFAULT_ORDER_VALUES, Sort } from '../const/sort.js';
 import { UserAction, UpdateType } from '../const/common.js';
 import { Filters } from '../const/filters.js';
 import { filter } from '../utils/filters.js';
+import NewTripPointPresenter from './new-trip-point-presenter.js';
 
 export default class TripPointsListPresenter {
   #sortModel = null;
@@ -16,31 +17,41 @@ export default class TripPointsListPresenter {
   #tripContainer = null;
   #filtersModel = null;
   #filterType = Filters.EVERYTHING;
+  #handleNewPointDestroy = null;
 
   #pointsListComponent = new PointsListView();
 
   #pointsPresenters = new Map();
+  #newPointPresenter = null;
 
   constructor({
     tripContainer,
     pointsModel,
-    filtersModel
+    filtersModel,
+    newPointDestroy
   }) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
+    this.#handleNewPointDestroy = newPointDestroy;
 
     this.#filtersModel.addObserver(this.#handleModelEvent);
     this.#pointsModel.addObserver(this.#handleModelEvent);
-  }
 
-  init() {
     this.#sortModel = new SortModel({
       list: SORT_DEFAULT_ORDER_VALUES.slice(),
       checked: Sort.DAY,
       disabled: [Sort.EVENT, Sort.OFFERS]
     });
 
+    this.#newPointPresenter = new NewTripPointPresenter({
+      pointsListContainer: this.#pointsListComponent.element,
+      dataChange: this.#handleViewAction,
+      destroy: this.#handleNewPointDestroy
+    });
+  }
+
+  init() {
     this.#renderSort();
     this.#renderPointsList();
   }
@@ -50,10 +61,10 @@ export default class TripPointsListPresenter {
     this.#clearSort();
   }
 
-
-  #handlePointDataChange = (updatedPoint) => {
-    this.#pointsPresenters.get(updatedPoint.id).init(updatedPoint);
-    this.#handleSortTypeChange(this.#sortModel.data.checked);
+  createPoint = () => {
+    this.#sortModel.checkedType = Sort.DAY;
+    this.#filtersModel.setFilter(UpdateType.MAJOR, Filters.EVERYTHING);
+    this.#newPointPresenter.init();
   };
 
   #handleModeChange = () => {
@@ -67,10 +78,10 @@ export default class TripPointsListPresenter {
         this.#pointsModel.updatePoints(updateType, update);
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoints(updateType, update);
+        this.#pointsModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoints(updateType, update);
+        this.#pointsModel.deletePoint(updateType, update);
         break;
     }
   };
@@ -104,26 +115,26 @@ export default class TripPointsListPresenter {
     this.#renderSort();
   };
 
+
   #clearPointsList({resetRenderedPointCount = false, resetSortType = false} = {}) {
     const pointsCount = this.points.length;
 
+    this.#newPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.destroy());
     this.#pointsPresenters.clear();
   }
 
-  #clearSort() {
-    remove(this.#sortComponent);
-  }
+  #clearSort = () => remove(this.#sortComponent);
 
-  #renderSort() {
+  #renderSort = () => {
     this.#sortComponent = new SortView(
       this.#sortModel.data,
       {sortTypeChange: this.#handleSortTypeChange}
     );
     render(this.#sortComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
-  }
+  };
 
-  #renderPoint(point) {
+  #renderPoint = (point) => {
     const pointPresenter = new TripPointPresenter({
       pointsListContainer: this.#pointsListComponent.element,
       dataChange: this.#handleViewAction,
@@ -131,19 +142,22 @@ export default class TripPointsListPresenter {
     });
     pointPresenter.init(point);
     this.#pointsPresenters.set(point.id, pointPresenter);
-  }
+  };
 
-  #renderPointsList() {
+
+  #renderPointsList = () => {
     render(this.#pointsListComponent, this.#tripContainer);
     this.points
       .slice()
       .forEach((point) => this.#renderPoint(point));
-  }
+  };
+
 
   get points() {
     this.#filterType = this.#filtersModel.filter;
     const points = this.#pointsModel.points;
     const filteredPoints = filter[this.#filterType](points);
+
 
     switch (this.#sortModel.data.checked) {
       case Sort.DAY:
