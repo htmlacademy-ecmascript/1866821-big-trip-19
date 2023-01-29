@@ -14,18 +14,15 @@ export default class TripInfoPresenter {
     this.#parentContainer = parentContainer;
     this.#pointsModel = pointsModel;
     this.#destinations = destinations;
-
     this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
-    if (this.#pointsModel.points.length !== 0) {
-      this.#model = new TripInfoModel({
-        pointsModel: this.#pointsModel,
-        destinations: this.#destinations
-      });
-      this.#render();
-    }
+    this.#model = new TripInfoModel({
+      pointsModel: this.#pointsModel,
+      destinations: this.#destinations
+    });
+    this.#render();
   }
 
   #render() {
@@ -34,11 +31,13 @@ export default class TripInfoPresenter {
   }
 
   #handleModelEvent = () => {
-    this.init();
+    this.clear();
+    if (this.#pointsModel.points.length !== 0) {
+      this.init();
+    }
   };
 
   clear() {
     remove(this.#component);
   }
-
 }

@@ -51,6 +51,23 @@ export default class TripPointsListPresenter {
     });
   }
 
+  get points() {
+    this.#filterType = this.#filtersModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[this.#filterType](points);
+
+    switch (this.#sortModel.data.checked) {
+      case Sort.DAY:
+        return filteredPoints.sort(sortPointsDayDown);
+      case Sort.PRICE:
+        return filteredPoints.sort(sortPointsPriceDown);
+      case Sort.TIME:
+        return filteredPoints.sort(sortPointsDurationDown);
+    }
+
+    return filteredPoints;
+  }
+
   init() {
     this.#renderSort();
     this.#renderPointsList();
@@ -68,6 +85,7 @@ export default class TripPointsListPresenter {
   };
 
   #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -97,7 +115,9 @@ export default class TripPointsListPresenter {
         this.#renderPointsList();
         break;
       case UpdateType.MAJOR:
-        this.#clearPointsList({resetRenderedPointCount: true, resetSortType: true});
+        this.#clearSort();
+        this.#clearPointsList({resetSortType: true});
+        this.#renderSort();
         this.#renderPointsList();
         break;
     }
@@ -109,19 +129,21 @@ export default class TripPointsListPresenter {
       return;
     }
 
-    this.clear();
     this.#sortModel.setCheckedType({checkedType: sortType});
-    this.#renderPointsList();
+    this.#clearPointsList();
+    this.#clearSort();
     this.#renderSort();
+    this.#renderPointsList();
   };
 
 
-  #clearPointsList({resetRenderedPointCount = false, resetSortType = false} = {}) {
-    const pointsCount = this.points.length;
-
+  #clearPointsList({resetSortType = false} = {}) {
     this.#newPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.destroy());
     this.#pointsPresenters.clear();
+    if (resetSortType) {
+      this.#sortModel.setCheckedType({checkedType: Sort.DAY });
+    }
   }
 
   #clearSort = () => remove(this.#sortComponent);
@@ -131,6 +153,7 @@ export default class TripPointsListPresenter {
       this.#sortModel.data,
       {sortTypeChange: this.#handleSortTypeChange}
     );
+
     render(this.#sortComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
   };
 
@@ -147,27 +170,10 @@ export default class TripPointsListPresenter {
 
   #renderPointsList = () => {
     render(this.#pointsListComponent, this.#tripContainer);
+
     this.points
       .slice()
       .forEach((point) => this.#renderPoint(point));
   };
 
-
-  get points() {
-    this.#filterType = this.#filtersModel.filter;
-    const points = this.#pointsModel.points;
-    const filteredPoints = filter[this.#filterType](points);
-
-
-    switch (this.#sortModel.data.checked) {
-      case Sort.DAY:
-        return filteredPoints.sort(sortPointsDayDown);
-      case Sort.PRICE:
-        return filteredPoints.sort(sortPointsPriceDown);
-      case Sort.TIME:
-        return filteredPoints.sort(sortPointsDurationDown);
-    }
-
-    return filteredPoints;
-  }
 }

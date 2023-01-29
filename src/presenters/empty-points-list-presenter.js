@@ -16,14 +16,12 @@ export default class EmptyPointsListPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
 
-    this.init();
+    this.#handleModelEvent();
   }
 
   init() {
-    if (this.#pointsModel.points.length === 0) {
-      this.#emptyPointsListComponent = new EmptyPointsListView({checkedType: this.#filtersModel.filter});
-      this.#renderEmptyPointsList();
-    }
+    this.#emptyPointsListComponent = new EmptyPointsListView({checkedType: this.#filtersModel.filter});
+    this.#renderEmptyPointsList();
   }
 
 
@@ -31,18 +29,22 @@ export default class EmptyPointsListPresenter {
 
     const filteredPoints = filter[this.#filtersModel.filter](this.#pointsModel.points);
 
-    if (!this.#emptyPointsListComponent) {
-      this.init();
+    if (this.#pointsModel.points.length === 0) {
+      if (this.#emptyPointsListComponent) {
+        this.clear();
+      } else {
+        this.init();
+      }
       return;
     }
 
-    if (this.#emptyPointsListComponent) {
+    if (filteredPoints.length === 0) {
+
       this.clear();
-      return;
-    }
-
-    if (filteredPoints.length === 0 && !this.#emptyPointsListComponent) {
       this.init();
+
+    } else if (this.#emptyPointsListComponent) {
+      this.clear();
     }
   };
 

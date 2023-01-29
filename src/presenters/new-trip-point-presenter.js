@@ -64,10 +64,12 @@ export default class NewTripPointPresenter {
   }
 
   #handleFormSubmit = (task) => {
+    const cloneTask = {...task};
+    cloneTask.id = nanoid();
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...task},
+      cloneTask,
     );
     this.destroy();
   };

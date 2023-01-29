@@ -42,7 +42,9 @@ export default class TripPresenter {
 
     this.#renderNewEventButton();
 
-    this.#tripInfoPresenter.init();
+    if (this.#pointsModel.points.length !== 0) {
+      this.#tripInfoPresenter.init();
+    }
     this.#tripFiltersPresenter.init();
     this.#tripPointsPresenter.init();
   }
@@ -92,7 +94,6 @@ export default class TripPresenter {
     this.#newEventButtonComponent.element.disabled = false;
     this.#emptyPointsPresenter.init();
   };
-
 
   get points() {
     return this.#pointsModel.points;

@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
 import { bringFirstCharToUpperCase } from '../../utils/common.js';
-import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT__DATE_SIMPLE, dateInPast } from '../../utils/date.js';
+import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT__DATE_SIMPLE } from '../../utils/date.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -65,7 +65,7 @@ const createEventFieldTemplate = ({checkedType, checkedDestination, destinations
       id="event-destination-1" 
       type="text" 
       name="event-destination" 
-      value="${bringFirstCharToUpperCase(checkedDestination.name)}" 
+      value="${bringFirstCharToUpperCase(checkedDestination ? checkedDestination.name : '')}" 
       list="destination-list-1"
     >
     <datalist id="destination-list-1">
@@ -83,8 +83,7 @@ const createTimeIntervalTemplate = ({dateFrom, dateTo}) => (
       event__input--time" 
       id="event-start-time-1" 
       type="text" 
-      name="event-start-time"
-      ${dateInPast(dateFrom) ? 'disabled' : ''} 
+      name="event-start-time" 
       value="${bringToCommonEventDate(dateFrom)}"
     >
     &mdash;
@@ -95,7 +94,6 @@ const createTimeIntervalTemplate = ({dateFrom, dateTo}) => (
       id="event-end-time-1" 
       type="text" 
       name="event-end-time" 
-      ${dateInPast(dateTo) ? 'disabled' : ''} 
       value="${bringToCommonEventDate(dateTo)}"
     >
   </div>`
@@ -107,13 +105,13 @@ const createPriceTemplate = ({basePrice}) => (
         <span class="visually-hidden">Price</span>
         &euro;
     </label>
-    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
   </div>`
 );
 
-const createHeaderBtnsTemplate = () => (
+const createHeaderBtnsTemplate = ({checkedDestination}) => (
   `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-   <button class="event__reset-btn" type="reset">Delete</button>
+   <button class="event__reset-btn" type="reset">${checkedDestination ? 'Delete' : 'Cancel'}</button>
    <button class="event__rollup-btn" type="button">
     <span class="visually-hidden">Open event</span>
   </button>`
@@ -137,7 +135,7 @@ const createEventHeaderInfoTemplate = ({
 
         ${createPriceTemplate({basePrice})}
 
-        ${createHeaderBtnsTemplate()}
+        ${createHeaderBtnsTemplate({checkedDestination})}
 
     </header>`);
 
@@ -211,14 +209,13 @@ const createDestinationTemplate = ({checkedDestination}) => (
 
 const createEventDetailsTemplate = ({checkedOffersIds, offersList, checkedDestination, checkedType}) => {
   const offersOfType = offersList.find((offersItem) => offersItem.type === checkedType).offers;
-
   return (`<section class="event__details">
 
       ${offersOfType.length !== 0 ? createOffersTemplate({checkedOffersIds, offersList, checkedType}) : ''}
-      ${checkedDestination !== '' ? createDestinationTemplate({checkedDestination}) : ''}
+      ${checkedDestination ? createDestinationTemplate({checkedDestination}) : ''}
 
     </section>`);
-}
+};
 
 const createPointChangeTemplate = ({
   basePrice,
@@ -312,6 +309,7 @@ export default class PointEditView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('focusout', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameFillingHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
 
     if (this._state.offersList.length !== 0) {
       const offersOfType = this.element.querySelector('.event__available-offers');
@@ -327,6 +325,13 @@ export default class PointEditView extends AbstractStatefulView {
     evt.preventDefault();
     this.updateElement({
       checkedType: evt.target.value,
+    });
+  };
+
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      basePrice: evt.target.value,
     });
   };
 

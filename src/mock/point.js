@@ -5,7 +5,7 @@ import {PointTypes} from '../const/point.js';
 import {nanoid} from 'nanoid';
 
 const mockPoints = [
-  /*{
+  {
     basePrice: '2200',
     dateFrom: new Date(Date.parse('2023-02-11T12:22:56.845Z')),
     dateTo: new Date(Date.parse('2023-03-11T13:45:13.375Z')),
@@ -34,7 +34,7 @@ const mockPoints = [
     isFavorite: false,
     offers: [getOfferByIndex(3).id, getOfferByIndex(1).id],
     type: PointTypes.DRIVE
-  },*/
+  },
   {
     basePrice: '300',
     dateFrom: new Date(Date.parse('2023-01-10T21:11:10.845Z')),
