@@ -95,6 +95,7 @@ export default class PointView extends AbstractView {
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
+
   constructor({
     id,
     basePrice,

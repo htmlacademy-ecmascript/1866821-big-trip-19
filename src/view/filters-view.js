@@ -1,50 +1,59 @@
 import AbstractView from '../framework/view/abstract-view';
 import {bringFirstCharToUpperCase} from '../utils/common.js';
 
-const getCheckedAttribute = ({filterName, checked}) => (filterName === checked) ? 'checked' : '';
 
-const createItemRepeatingTemplate = ({list, checked}) =>
-  list.map((filterName) => (
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const {type, count} = filter;
+  return(
     `<div class="trip-filters__filter">
-      <input id="filter-${filterName}" 
+      <input 
+        id="filter-${type}" 
         class="trip-filters__filter-input  
         visually-hidden" 
         type="radio" 
         name="trip-filter" 
-        value="${filterName}" 
-        data-filter-type="${filterName}"
-        ${getCheckedAttribute({filterName, checked})}
+        value="${type}" 
+        data-filter-type="${type}"
+        ${type === currentFilterType ? 'checked' : ''}
+        ${count === 0 ? 'disabled' : ''}
       >
-      <label class="trip-filters__filter-label" for="filter-${filterName}">
-        ${bringFirstCharToUpperCase(filterName)}
+      <label class="trip-filters__filter-label" for="filter-${type}">
+        ${bringFirstCharToUpperCase(type)}
       </label>
-    </div>`)
-  ).join('');
+    </div>`
+  );
+};
 
+const createFormTemplate = (filterItems, currentFilterType) => {
+  const filterItemsTemplate = filterItems
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
+    .join('');
 
-const createFormTemplate = ({list, checked}) =>
-  (
+  return (
     `<form class="trip-filters" action="#" method="get">
-      ${createItemRepeatingTemplate({list, checked})}
+      ${filterItemsTemplate}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
   );
+};
 
 
 export default class FiltersView extends AbstractView {
-  #data = null;
+  #filters = null;
+  #currentFilter = null;
   #handleFilterTypeChange = null;
 
-  constructor({list, checked, filterChange}) {
+  constructor({filters, currentFilterType, onFilterTypeChange}) {
     super();
 
-    this.#data = {list, checked};
-    this.#handleFilterTypeChange = filterChange;
+    this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    this.#handleFilterTypeChange = onFilterTypeChange;
     this.element.addEventListener('click', this.#filterTypeChangeHandler);
   }
 
   get template() {
-    return createFormTemplate(this.#data);
+    return createFormTemplate(this.#filters, this.#currentFilter);
   }
 
   #filterTypeChangeHandler = (evt) => {

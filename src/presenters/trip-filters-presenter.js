@@ -1,17 +1,14 @@
-import {FILTERS_DEFAULT_ORDER_VALUES, Filters} from '../const/filters.js';
+import {Filters} from '../const/filters.js';
 import FiltersView from '../view/filters-view.js';
-import { render, remove } from '../framework/render.js';
-import { FiltersModel } from '../model/filters-model.js';
-import { filter } from '../utils/filters.js';
+import { render, remove, replace } from '../framework/render.js';
 
+import { filter } from '../utils/filters.js';
+import { UpdateType } from '../const/common.js';
 
 export default class TripFiltersPresenter {
-  #points = [];
   #pointsModel = null;
-  #filteredPoints = [];
 
   #filtersParentContainer = null;
-  #handlePointsFilter = null;
 
   #filtersModel = null;
   #filtersComponent = null;
@@ -19,55 +16,70 @@ export default class TripFiltersPresenter {
   constructor({
     filtersParentContainer,
     pointsModel,
-    filterPoints,
+    filtersModel
   }) {
     this.#filtersParentContainer = filtersParentContainer;
     this.#pointsModel = pointsModel;
-    this.#handlePointsFilter = filterPoints;
+    this.#filtersModel = filtersModel;
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filtersModel.addObserver(this.#handleModelEvent);
   }
+
+
+  get filters() {
+    const points = this.#pointsModel.points;
+
+    return [
+      {
+        type: Filters.EVERYTHING,
+        count: filter[Filters.EVERYTHING](points).length,
+      },
+      {
+        type: Filters.FUTURE,
+        count: filter[Filters.FUTURE](points).length,
+      },
+      {
+        type: Filters.PAST,
+        count: filter[Filters.PAST](points).length,
+      },
+      {
+        type: Filters.PRESENT,
+        count: filter[Filters.PRESENT](points).length,
+      }
+    ];
+  }
+
 
   init() {
-    this.#points = [...this.#pointsModel.points];
-    this.#filteredPoints = [...this.#pointsModel.points];
+    const filters = this.filters;
+    const prevFilterComponent = this.#filtersComponent;
 
-    this.#filtersModel = new FiltersModel({
-      list: FILTERS_DEFAULT_ORDER_VALUES.slice(),
-      checked: Filters.EVERYTHING
+    this.#filtersComponent = new FiltersView({
+      filters,
+      currentFilterType: this.#filtersModel.filter,
+      onFilterTypeChange: this.#handleFilterTypeChange
     });
 
-    this.#render();
-  }
 
-  #filterPoints(filterType) {
-    this.#filteredPoints = filter[filterType](this.#points);
-  }
-
-  #handleFilterTypeChange = (filterType) => {
-    if (filterType === this.#filtersModel.data.checked) {
+    if (prevFilterComponent === null) {
+      render(this.#filtersComponent, this.#filtersParentContainer);
       return;
     }
 
-    this.#filterPoints(filterType);
-    this.#handlePointsFilter(this.#filteredPoints);
-    this.#filtersModel.setCheckedType({checkedType: filterType});
-    this.#clearFilters();
-    this.#renderFilters();
+    replace(this.#filtersComponent, prevFilterComponent);
+    remove(prevFilterComponent);
+  }
+
+  #handleModelEvent = () => {
+    this.init();
   };
 
-  #clearFilters() {
-    remove(this.#filtersComponent);
-  }
+  #handleFilterTypeChange = (filterType) => {
+    if (this.#filtersModel.filter === filterType) {
+      return;
+    }
 
-  #renderFilters() {
-    this.#filtersComponent = new FiltersView({
-      list: this.#filtersModel.data.list,
-      checked: this.#filtersModel.data.checked,
-      filterChange: this.#handleFilterTypeChange
-    });
-    render(this.#filtersComponent, this.#filtersParentContainer);
-  }
-
-  #render() {
-    this.#renderFilters();
-  }
+    this.#filtersModel.setFilter(UpdateType.MAJOR, filterType);
+  };
 }

@@ -1,21 +1,24 @@
 import AbstractView from '../../framework/view/abstract-view';
+import { EmptyPointsListType } from '../../const/filters';
 
-const createEmptyPointsTemplate = (message) =>
-  (
+const createEmptyPointsTemplate = (checkedType) => {
+
+  const message = EmptyPointsListType[checkedType];
+
+  return (
     `<p class='trip-events__msg'>${message}</p>`
   );
-
+};
 
 export default class EmptyPointsListView extends AbstractView {
-  #message = '';
+  #checkedType = null;
 
-  constructor({message}) {
+  constructor({checkedType}) {
     super();
-
-    this.#message = message;
+    this.#checkedType = checkedType;
   }
 
   get template() {
-    return createEmptyPointsTemplate(this.#message);
+    return createEmptyPointsTemplate(this.#checkedType);
   }
 }

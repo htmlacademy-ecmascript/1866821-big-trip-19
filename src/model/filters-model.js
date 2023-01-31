@@ -1,18 +1,15 @@
-export class FiltersModel {
-  #data = null;
+import Observable from '../framework/observable.js';
+import { Filters } from '../const/filters.js';
 
-  constructor({list, checked}) {
-    this.#data = {
-      list,
-      checked
-    };
+export class FiltersModel extends Observable {
+  #checkedType = Filters.EVERYTHING;
+
+  setFilter(updateType, checkedType) {
+    this.#checkedType = checkedType;
+    this._notify(updateType, checkedType);
   }
 
-  setCheckedType({checkedType}) {
-    this.#data.checked = checkedType;
-  }
-
-  get data() {
-    return this.#data;
+  get filter() {
+    return this.#checkedType;
   }
 }

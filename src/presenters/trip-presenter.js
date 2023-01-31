@@ -2,12 +2,13 @@ import TripPointsListPresenter from './trip-points-list-presenter.js';
 import TripFiltersPresenter from '../presenters/trip-filters-presenter.js';
 import PointsListModel from '../model/points-list-model.js';
 import TripInfoPresenter from '../presenters/trip-info-presenter.js';
-import EmptyPointsListPresenter from './empty-points-list-presenter.js';
 import { mockDestinations } from '../mock/destination.js';
-import { mockPoints } from '../mock/point.js';
 import NewEventButtonView from '../view/new-event-button-view.js';
 import { EVENT_BUTTON_DEFAULT_MESSAGE } from '../const/buttons';
 import { render } from '../framework/render.js';
+import { FiltersModel } from '../model/filters-model.js';
+import { DestinationsModel } from '../model/destinations-model.js';
+import EmptyPointsListPresenter from './empty-points-list-presenter.js';
 
 
 export default class TripPresenter {
@@ -17,8 +18,9 @@ export default class TripPresenter {
   #eventsElement = null;
   #newEventButtonComponent = null;
 
+  #filtersModel = null;
   #pointsModel = null;
-  #destinations = null;
+  #destinationsModel = null;
 
   #tripInfoPresenter = null;
   #tripFiltersPresenter = null;
@@ -32,55 +34,48 @@ export default class TripPresenter {
   }
 
   init() {
-    this.#pointsModel = new PointsListModel({points: mockPoints.slice()});
-    this.#destinations = [...mockDestinations];
+    this.#pointsModel = new PointsListModel();
+    this.#destinationsModel = new DestinationsModel({destinations: [...mockDestinations]});
+    this.#filtersModel = new FiltersModel();
 
     this.#initPresenters();
 
     this.#renderNewEventButton();
 
-    if (this.#pointsModel.isEmpty()) {
-      this.#initEmptyTrip();
-      return;
+    if (this.#pointsModel.points.length !== 0) {
+      this.#tripInfoPresenter.init();
     }
-    this.#initSimpleTrip();
+    this.#tripFiltersPresenter.init();
+    this.#tripPointsPresenter.init();
   }
 
   #initPresenters() {
-
     this.#tripFiltersPresenter = new TripFiltersPresenter({
       filtersParentContainer: this.#filtersWrapElement,
       newEventButtonParentContainer: this.#newEventButtonWrapElement,
       pointsModel: this.#pointsModel,
-      filterPoints: this.#handlePointsChange
+      filtersModel: this.#filtersModel
     });
-
-    this.#emptyPointsPresenter = new EmptyPointsListPresenter({parentContainer: this.#eventsElement});
-
-    if (this.#pointsModel.isEmpty()) {
-      return;
-    }
 
     this.#tripInfoPresenter = new TripInfoPresenter({
       parentContainer: this.#headerElement,
       pointsModel: this.#pointsModel,
-      destinations: this.#destinations
+      destinations: this.#destinationsModel.data
     });
 
     this.#tripPointsPresenter = new TripPointsListPresenter({
       tripContainer: this.#eventsElement,
-      pointsModel: this.#pointsModel
+      pointsModel: this.#pointsModel,
+      filtersModel: this.#filtersModel,
+      newPointDestroy: this.#handleNewTaskFormClose
+    });
+
+    this.#emptyPointsPresenter = new EmptyPointsListPresenter({
+      parentContainer: this.#eventsElement,
+      pointsModel: this.#pointsModel,
+      filtersModel: this.#filtersModel
     });
   }
-
-  #handlePointsChange = (points) => {
-    if (!this.#pointsModel.isEmpty()) {
-      this.#pointsModel.points = [...points];
-      this.#tripPointsPresenter.clear();
-      this.#tripPointsPresenter.init();
-    }
-  };
-
 
   #renderNewEventButton() {
     this.#newEventButtonComponent = new NewEventButtonView({
@@ -90,16 +85,17 @@ export default class TripPresenter {
     render(this.#newEventButtonComponent, this.#headerElement);
   }
 
-  #handleNewPoint = () => { };
+  #handleNewPoint = () => {
+    this.#tripPointsPresenter.createPoint();
+    this.#newEventButtonComponent.element.disabled = true;
+  };
 
-  #initEmptyTrip() {
-    this.#tripFiltersPresenter.init();
+  #handleNewTaskFormClose = () => {
+    this.#newEventButtonComponent.element.disabled = false;
     this.#emptyPointsPresenter.init();
-  }
+  };
 
-  #initSimpleTrip() {
-    this.#tripInfoPresenter.init();
-    this.#tripFiltersPresenter.init();
-    this.#tripPointsPresenter.init();
+  get points() {
+    return this.#pointsModel.points;
   }
 }
