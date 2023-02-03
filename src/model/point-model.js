@@ -1,5 +1,3 @@
-import { mockDestinations } from '../mock/destination.js';
-
 import { PointTypes } from '../const/point.js';
 
 export class PointModel {
@@ -16,7 +14,7 @@ export class PointModel {
     offers,
     type
   },
-  offersData,
+  offersByType,
   destinationsList
   ) {
     this.#previewData = {
@@ -24,11 +22,12 @@ export class PointModel {
       basePrice,
       dateFrom,
       dateTo,
-      destination: this.#getDestinationTitle(destination),
+      destination: this.#getDestinationTitle(destination, destinationsList),
       isFavorite,
       offers: this.#getOffers({
         checkedOffersIds: offers,
-        offersList: offersData.offers
+        offersByType,
+        type
       }),
       type
     };
@@ -39,7 +38,7 @@ export class PointModel {
       dateTo,
       isFavorite,
       checkedOffersIds: offers,
-      offersList: offersData.offersByType,
+      offersList: offersByType,
       checkedType: type,
       typesList: PointTypes,
       checkedDestinationId: destination ? destination : '',
@@ -47,13 +46,16 @@ export class PointModel {
     };
   }
 
-  #getDestinationTitle(id) {
-    const pointDestination = mockDestinations.find( (destination) => destination.id === id );
+  #getDestinationTitle(id, destinationsList) {
+    const pointDestination = destinationsList.find( (destination) => destination.id === id );
     return pointDestination ? pointDestination.name : '';
   }
 
-  #getOffers({checkedOffersIds, offersList}) {
-    return offersList.filter((offer) => checkedOffersIds.includes(offer.id));
+  #getOffers({checkedOffersIds, offersByType, type}) {
+    const allOffersListOfType = offersByType.find((offerByType) => type === offerByType.type).offers;
+    const checkedOffersListOfType = allOffersListOfType.filter((offer) => checkedOffersIds.includes(offer.id));
+
+    return checkedOffersListOfType;
   }
 
   get previewData() {

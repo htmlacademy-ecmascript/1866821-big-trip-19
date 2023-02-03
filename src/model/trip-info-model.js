@@ -1,11 +1,13 @@
 export class TripInfoModel {
   #points = null;
   #destinations = null;
+  #offersByType = null;
   #data = null;
 
-  constructor({pointsModel, destinations}) {
+  constructor({pointsModel, destinations, offers}) {
     this.#points = [...pointsModel.points];
     this.#destinations = [...destinations];
+    this.#offersByType = [...offers];
 
     this.#data = {
       startDate: this.#getStartDate(),
@@ -15,7 +17,7 @@ export class TripInfoModel {
     };
   }
 
-  #getStartDate() {
+  #getStartDate = () => {
     let startDate = this.#points[0].dateFrom;
 
     this.#points.forEach((point) => {
@@ -25,9 +27,9 @@ export class TripInfoModel {
     });
 
     return startDate;
-  }
+  };
 
-  #getEndDate() {
+  #getEndDate = () => {
     let endDate = this.#points[0].dateFrom;
     this.#points.forEach((point) => {
       if (point.dateTo > endDate) {
@@ -36,17 +38,40 @@ export class TripInfoModel {
     });
 
     return endDate;
-  }
+  };
 
-  #getCost() {
+  #getCost = () => {
     let cost = 0;
     this.#points.forEach((point) => {
       cost += Number(point.basePrice);
     });
+    cost += this.#getOffersSumm();
     return cost;
-  }
+  };
 
-  #getDestinations() {
+
+  #getOffersSumm = () => {
+    let offersSumm = 0;
+    let checkedOffersList = [];
+
+    this.#points.forEach((point) => {
+
+      const offersOfPointType = this.#offersByType.find((offerByType) => offerByType.type === point.type).offers;
+
+      const filteredOffers = offersOfPointType.filter((offer) => point.offers.includes(offer.id));
+
+      checkedOffersList = [...checkedOffersList, ...filteredOffers];
+
+    });
+
+    checkedOffersList.forEach((offer) => {
+      offersSumm += Number(offer.price);
+    });
+
+    return offersSumm;
+  };
+
+  #getDestinations = () => {
     let previosId = '-1';
     const destinationsIdsNoRepeat = [];
 
@@ -66,8 +91,9 @@ export class TripInfoModel {
         }
       });
     });
+
     return destinationsNames;
-  }
+  };
 
   get data() {
     return this.#data;

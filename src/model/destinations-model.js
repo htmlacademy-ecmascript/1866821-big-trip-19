@@ -1,11 +1,21 @@
 export class DestinationsModel {
+  #destinationsApiService = null;
+
   #data = null;
 
-  constructor({ destinations }) {
-    this.#data = destinations;
+  constructor({ destinationsApiService }) {
+    this.#destinationsApiService = destinationsApiService;
   }
 
   get data() {
     return this.#data;
+  }
+
+  async init() {
+    try {
+      this.#data = await this.#destinationsApiService.destinations;
+    } catch(err) {
+      this.#data = [];
+    }
   }
 }

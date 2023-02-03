@@ -58,12 +58,15 @@ const getTimeDifference = ({firstDate, secondDate, isSimple = false}) => {
 
   const difference = getDidderence(firstDate, secondDate);
 
+  if (difference.$d.minutes === 0) {
+    return '0m';
+  }
+
   const minutesDifference = difference.$d.minutes !== 0 ? `${difference.$d.minutes}m` : '';
   const hoursDifference = difference.$d.hours !== 0 ? `${difference.$d.hours}h` : '';
   const daysDifference = difference.$d.days !== 0 ? `${difference.$d.days}d` : '';
   const monthsDifference = difference.$d.months !== 0 ? `${difference.$d.months}mo` : '';
   const yearsDifference = difference.$d.years !== 0 ? `${difference.$d.years}y` : '';
-
 
   return `${yearsDifference} ${monthsDifference} ${daysDifference} ${hoursDifference} ${minutesDifference}`;
 

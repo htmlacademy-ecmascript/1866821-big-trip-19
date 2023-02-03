@@ -1,5 +1,3 @@
-import {nanoid} from 'nanoid';
-
 export const PointTypes = {
   TAXI: 'taxi',
   BUS: 'bus',
@@ -12,13 +10,14 @@ export const PointTypes = {
   RESTAURANT: 'restaurant'
 };
 
+export const DEFAULT_POINT_ID = '-111';
+
 export const BLANK_POINT = {
-  id: `${nanoid()}`,
-  basePrice: '0',
+  basePrice: '1',
   dateFrom: new Date(Date.now()),
   dateTo: new Date(Date.now()),
   destination: '',
   isFavorite: false,
   offers: [],
-  type: PointTypes.CHECK_IN
+  type: PointTypes.TAXI
 };

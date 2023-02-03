@@ -3,6 +3,7 @@ import { bringFirstCharToUpperCase } from '../../utils/common.js';
 import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT__DATE_SIMPLE } from '../../utils/date.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import { DEFAULT_POINT_ID } from '../../const/point.js';
 
 const getCheckedAttribute = ({type, checked}) => (type === checked) ? 'checked' : '';
 const getCheckedAttributeById = ({id, idsArr}) => idsArr.includes(id) ? 'checked' : '';
@@ -109,22 +110,31 @@ const createPriceTemplate = ({basePrice}) => (
   </div>`
 );
 
-const createHeaderBtnsTemplate = ({checkedDestination}) => (
-  `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-   <button class="event__reset-btn" type="reset">${checkedDestination ? 'Delete' : 'Cancel'}</button>
-   <button class="event__rollup-btn" type="button">
+const createHeaderBtnsTemplate = ({id, isSaving, isDeleting, isDisabled}) => (
+  `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+     ${isSaving ? 'Saving...' : 'Save'}
+   </button>
+   <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+     ${id === DEFAULT_POINT_ID ? 'Cancel' : `${isDeleting ? 'Deleting...' : 'Delete'}`}
+   </button>
+   <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
     <span class="visually-hidden">Open event</span>
   </button>`
 );
 
 const createEventHeaderInfoTemplate = ({
+  id,
   basePrice,
   dateFrom,
   dateTo,
   checkedType,
   typesList,
   checkedDestination,
-  destinationsList}) =>
+  destinationsList,
+  isSaving,
+  isDeleting,
+  isDisabled
+}) =>
   (`<header class="event__header">
   
         ${createEventTypeTemplate({checkedType, typesList})}
@@ -135,7 +145,7 @@ const createEventHeaderInfoTemplate = ({
 
         ${createPriceTemplate({basePrice})}
 
-        ${createHeaderBtnsTemplate({checkedDestination})}
+        ${createHeaderBtnsTemplate({id, isSaving, isDeleting, isDisabled})}
 
     </header>`);
 
@@ -144,20 +154,21 @@ const getLastWord = (str) => {
   return strAsArray[strAsArray.length - 1];
 };
 
-const createOffersItemRepeatingTemplate = ({offersList, checkedOffersIds, checkedType}) => {
+const createOffersItemRepeatingTemplate = ({offersList, checkedOffersIds, checkedType, isDisabled}) => {
   const currentOfferByType = offersList.find((offerByType) => offerByType.type === checkedType);
 
   return (
     currentOfferByType.offers.map((offer) => (
       `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" 
-            id="event-offer-${getLastWord(offer.title)}-1" 
+            id="event-offer-${offer.id}-${getLastWord(offer.title)}-1" 
             type="checkbox" 
-            name="event-offer-${getLastWord(offer.title)}"
+            name="event-offer-${offer.id}-${getLastWord(offer.title)}"
             data-offer-id="${offer.id}"
+            ${isDisabled ? 'disabled' : ''}
            ${getCheckedAttributeById({id: offer.id, idsArr: checkedOffersIds})}
       >
-      <label class="event__offer-label" for="event-offer-${getLastWord(offer.title)}-1">
+      <label class="event__offer-label" for="event-offer-${offer.id}-${getLastWord(offer.title)}-1">
         <span class="event__offer-title">${bringFirstCharToUpperCase(offer.title)}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
@@ -167,13 +178,13 @@ const createOffersItemRepeatingTemplate = ({offersList, checkedOffersIds, checke
   );
 };
 
-const createOffersTemplate = ({offersList, checkedOffersIds, checkedType}) => (
+const createOffersTemplate = ({offersList, checkedOffersIds, checkedType, isDisabled}) => (
   `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     
     <div class="event__available-offers">
 
-      ${createOffersItemRepeatingTemplate({offersList, checkedOffersIds, checkedType})}
+      ${createOffersItemRepeatingTemplate({offersList, checkedOffersIds, checkedType, isDisabled})}
 
     </div>
   </section>`
@@ -207,17 +218,18 @@ const createDestinationTemplate = ({checkedDestination}) => (
   </section>`
 );
 
-const createEventDetailsTemplate = ({checkedOffersIds, offersList, checkedDestination, checkedType}) => {
+const createEventDetailsTemplate = ({checkedOffersIds, offersList, checkedDestination, checkedType, isDisabled}) => {
   const offersOfType = offersList.find((offersItem) => offersItem.type === checkedType).offers;
   return (`<section class="event__details">
 
-      ${offersOfType.length !== 0 ? createOffersTemplate({checkedOffersIds, offersList, checkedType}) : ''}
+      ${offersOfType.length !== 0 ? createOffersTemplate({checkedOffersIds, offersList, checkedType, isDisabled}) : ''}
       ${checkedDestination ? createDestinationTemplate({checkedDestination}) : ''}
 
     </section>`);
 };
 
 const createPointChangeTemplate = ({
+  id,
   basePrice,
   dateFrom,
   dateTo,
@@ -226,17 +238,36 @@ const createPointChangeTemplate = ({
   checkedType,
   typesList,
   checkedDestinationId,
-  destinationsList
+  destinationsList,
+  isSaving,
+  isDeleting,
+  isDisabled
 }) => {
-  const checkedDestination = destinationsList.find((destination) => destination.id === checkedDestinationId);
-
+  const checkedDestination = destinationsList.find((destination) => destination.id === Number(checkedDestinationId));
   return (
     `<li class="trip-events__item">
         <form class="event event--edit" action="#" method="post">
-            ${createEventHeaderInfoTemplate({basePrice, dateFrom, dateTo, checkedType, typesList, checkedDestination, destinationsList})}
-            ${createEventDetailsTemplate({checkedOffersIds, offersList, checkedDestination, checkedType})}            
+    ${createEventHeaderInfoTemplate({
+      basePrice,
+      dateFrom,
+      dateTo,
+      checkedType,
+      typesList,
+      checkedDestination,
+      destinationsList,
+      id,
+      isSaving,
+      isDeleting,
+      isDisabled
+    })}
+    ${createEventDetailsTemplate({
+      checkedOffersIds,
+      offersList,
+      checkedDestination,
+      checkedType,
+      isDisabled
+    })}            
         </form>
-
     </li>`
   );
 };
@@ -249,7 +280,7 @@ export default class PointEditView extends AbstractStatefulView {
   #handleDeleteClick = null;
 
   constructor({
-    id,
+    id = DEFAULT_POINT_ID,
     basePrice,
     dateFrom,
     dateTo,
@@ -325,13 +356,25 @@ export default class PointEditView extends AbstractStatefulView {
     evt.preventDefault();
     this.updateElement({
       checkedType: evt.target.value,
+      checkedOffersIds: []
     });
   };
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
+
+    let priceAsNumber = Math.round(Number(evt.target.value));
+
+    if (evt.target.value === '') {
+      evt.target.value = this._state.basePrice;
+      return;
+    } else if (priceAsNumber <= 0) {
+      evt.target.value = '1';
+      priceAsNumber = 1;
+    }
+
     this.updateElement({
-      basePrice: evt.target.value,
+      basePrice: `${priceAsNumber}`,
     });
   };
 
@@ -354,6 +397,16 @@ export default class PointEditView extends AbstractStatefulView {
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
+
+    if (evt.target.value === '') {
+      const checkedDestination = this._state.destinationsList.find((destination) => destination.id === Number(this._state.checkedDestinationId));
+      if (!checkedDestination) {
+        return;
+      }
+      evt.target.value = checkedDestination.name;
+      return;
+    }
+
     const currentDestinationOption = document.querySelector(`#destination-list-1 #${evt.target.value}`);
 
     this.updateElement({
@@ -435,7 +488,11 @@ export default class PointEditView extends AbstractStatefulView {
   };
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    };
   }
 
   static parseStateToPoint(state) {
@@ -449,6 +506,10 @@ export default class PointEditView extends AbstractStatefulView {
       offers: state.checkedOffersIds,
       type: state.checkedType
     };
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   }

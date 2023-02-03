@@ -1,3 +1,4 @@
+import { Filters, FILTERS_DEFAULT_TYPES_WITH_COUNT } from '../const/filters';
 import AbstractView from '../framework/view/abstract-view';
 import {bringFirstCharToUpperCase} from '../utils/common.js';
 
@@ -43,7 +44,11 @@ export default class FiltersView extends AbstractView {
   #currentFilter = null;
   #handleFilterTypeChange = null;
 
-  constructor({filters, currentFilterType, onFilterTypeChange}) {
+  constructor({
+    filters = [...FILTERS_DEFAULT_TYPES_WITH_COUNT],
+    currentFilterType = Filters.EVERYTHING,
+    onFilterTypeChange = null
+  } = {}) {
     super();
 
     this.#filters = filters;
@@ -59,6 +64,8 @@ export default class FiltersView extends AbstractView {
   #filterTypeChangeHandler = (evt) => {
     const inputNode = evt.target.parentNode.querySelector('input');
     evt.preventDefault();
-    this.#handleFilterTypeChange(inputNode.dataset.filterType);
+    if (!inputNode.disabled) {
+      this.#handleFilterTypeChange(inputNode.dataset.filterType);
+    }
   };
 }
