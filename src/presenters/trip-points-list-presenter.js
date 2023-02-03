@@ -10,7 +10,6 @@ import { Filters } from '../const/filters.js';
 import { filter } from '../utils/filters.js';
 import NewTripPointPresenter from './new-trip-point-presenter.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import LoadingView from '../view/loading-view.js';
 import { BlockerTimeLimit } from '../const/common.js';
 
 
@@ -20,7 +19,6 @@ export default class TripPointsListPresenter {
   #offersModel = null;
   #destinationsModel = null;
 
-  #loadingComponent = new LoadingView();
   #sortComponent = null;
   #tripContainer = null;
   #filtersModel = null;
@@ -32,7 +30,6 @@ export default class TripPointsListPresenter {
   #pointsPresenters = new Map();
   #newPointPresenter = null;
 
-  #isLoading = true;
   #uiBlocker = new UiBlocker({
     lowerLimit: BlockerTimeLimit.LOWER_LIMIT,
     upperLimit: BlockerTimeLimit.UPPER_LIMIT
@@ -163,7 +160,6 @@ export default class TripPointsListPresenter {
         this.#renderPointsList();
         break;
       case UpdateType.INIT:
-        this.#isLoading = false;
         this.#renderSort();
         this.#renderPointsList();
         break;
