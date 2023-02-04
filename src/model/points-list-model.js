@@ -33,7 +33,7 @@ export default class PointsListModel extends Observable {
       throw new Error('Can\'t update unexisting point');
     }
     try {
-      const response = await this.#pointsApiService.updatePoint(update);
+      const response = await this.#pointsApiService.update(update);
       const updatedPoint = this.#adaptToClient(response);
       this.#points = [
         ...this.#points.slice(0, index),
@@ -48,7 +48,7 @@ export default class PointsListModel extends Observable {
 
   async addPoint(updateType, update) {
     try {
-      const response = await this.#pointsApiService.addPoint(update);
+      const response = await this.#pointsApiService.add(update);
       const newPoint = this.#adaptToClient(response);
       this.#points = [newPoint, ...this.#points];
       this._notify(updateType, newPoint);
@@ -65,7 +65,7 @@ export default class PointsListModel extends Observable {
     }
 
     try {
-      await this.#pointsApiService.deletePoint(update);
+      await this.#pointsApiService.delete(update);
       this.#points = [
         ...this.#points.slice(0, index),
         ...this.#points.slice(index + 1),
