@@ -77,7 +77,7 @@ export default class TripPresenter {
     const destinationsApiService = new DestinationsApiService(END_POINT, AUTHORIZATION);
     const offersApiService = new OffersApiService(END_POINT, AUTHORIZATION);
 
-    this.#pointsModel = new PointsListModel({pointsApiService});
+    this.#pointsModel = new PointsListModel({apiService: pointsApiService});
     this.#destinationsModel = new DestinationsModel({apiService: destinationsApiService});
     this.#offersModel = new OffersModel({apiService: offersApiService});
     this.#filtersModel = new FiltersModel();
@@ -152,6 +152,6 @@ export default class TripPresenter {
   };
 
   get points() {
-    return this.#pointsModel.points;
+    return this.#pointsModel.elements;
   }
 }

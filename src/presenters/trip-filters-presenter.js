@@ -28,7 +28,7 @@ export default class TripFiltersPresenter {
 
 
   get filters() {
-    const points = this.#pointsModel.points;
+    const points = this.#pointsModel.elements;
 
     return [
       {

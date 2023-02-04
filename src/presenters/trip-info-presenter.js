@@ -20,7 +20,7 @@ export default class TripInfoPresenter {
   }
 
   init() {
-    if (this.#pointsModel.points.length !== 0) {
+    if (this.#pointsModel.elements.length !== 0) {
       this.#model = new TripInfoModel({
         pointsModel: this.#pointsModel,
         destinations: this.#destinationsModel.data,
@@ -37,7 +37,7 @@ export default class TripInfoPresenter {
 
   #handleModelEvent = () => {
     this.clear();
-    if (this.#pointsModel.points.length !== 0) {
+    if (this.#pointsModel.elements.length !== 0) {
       this.init();
     }
   };

@@ -5,7 +5,7 @@ export class TripInfoModel {
   #data = null;
 
   constructor({pointsModel, destinations, offers}) {
-    this.#points = [...pointsModel.points];
+    this.#points = [...pointsModel.elements];
     this.#destinations = [...destinations];
     this.#offersByType = [...offers];
 

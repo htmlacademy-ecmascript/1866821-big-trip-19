@@ -70,7 +70,7 @@ export default class TripPointsListPresenter {
 
   get points() {
     this.#filterType = this.#filtersModel.filter;
-    const points = this.#pointsModel.points;
+    const points = this.#pointsModel.elements;
     const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#sortModel.data.checked) {
@@ -86,7 +86,7 @@ export default class TripPointsListPresenter {
   }
 
   init() {
-    if (this.#pointsModel.points.length !== 0) {
+    if (this.#pointsModel.elements.length !== 0) {
       this.#renderSort();
     }
     this.#renderPointsList();
@@ -116,7 +116,7 @@ export default class TripPointsListPresenter {
       case UserAction.UPDATE_POINT:
         this.#pointsPresenters.get(update.id).setSaving();
         try {
-          await this.#pointsModel.updatePoints(updateType, update);
+          await this.#pointsModel.updateElements(updateType, update);
         } catch(err) {
           this.#pointsPresenters.get(update.id).setAborting();
         }
@@ -124,7 +124,7 @@ export default class TripPointsListPresenter {
       case UserAction.ADD_POINT:
         this.#newPointPresenter.setSaving();
         try {
-          await this.#pointsModel.addPoint(updateType, update);
+          await this.#pointsModel.addElement(updateType, update);
         } catch(err) {
           this.#newPointPresenter.setAborting();
         }
@@ -132,7 +132,7 @@ export default class TripPointsListPresenter {
       case UserAction.DELETE_POINT:
         this.#pointsPresenters.get(update.id).setDeleting();
         try {
-          await this.#pointsModel.deletePoint(updateType, update);
+          await this.#pointsModel.deleteElement(updateType, update);
         } catch(err) {
           this.#pointsPresenters.get(update.id).setAborting();
         }
@@ -153,7 +153,7 @@ export default class TripPointsListPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearPointsList();
-        if (this.#pointsModel.points.length === 0) {
+        if (this.#pointsModel.elements.length === 0) {
           this.#clearSort();
         }
         this.#renderPointsList();
