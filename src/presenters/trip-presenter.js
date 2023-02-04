@@ -78,8 +78,8 @@ export default class TripPresenter {
     const offersApiService = new OffersApiService(END_POINT, AUTHORIZATION);
 
     this.#pointsModel = new PointsListModel({pointsApiService});
-    this.#destinationsModel = new DestinationsModel({destinationsApiService});
-    this.#offersModel = new OffersModel({offersApiService});
+    this.#destinationsModel = new DestinationsModel({apiService: destinationsApiService});
+    this.#offersModel = new OffersModel({apiService: offersApiService});
     this.#filtersModel = new FiltersModel();
 
     await this.#pointsModel.init();

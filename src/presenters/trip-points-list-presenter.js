@@ -86,7 +86,9 @@ export default class TripPointsListPresenter {
   }
 
   init() {
-    this.#renderSort();
+    if (this.#pointsModel.points.length !== 0) {
+      this.#renderSort();
+    }
     this.#renderPointsList();
   }
 
@@ -97,7 +99,7 @@ export default class TripPointsListPresenter {
 
   createPoint = () => {
     this.#sortModel.checkedType = Sort.DAY;
-    this.#filtersModel.setFilter(UpdateType.MAJOR, Filters.EVERYTHING);
+    this.#filtersModel.setType(UpdateType.MAJOR, Filters.EVERYTHING);
     this.#newPointPresenter.init();
   };
 
@@ -151,6 +153,9 @@ export default class TripPointsListPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearPointsList();
+        if (this.#pointsModel.points.length === 0) {
+          this.#clearSort();
+        }
         this.#renderPointsList();
         break;
       case UpdateType.MAJOR:

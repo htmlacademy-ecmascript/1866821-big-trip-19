@@ -1,10 +1,10 @@
 export class OffersModel {
-  #offersApiService = null;
+  #apiService = null;
 
   #data = null;
 
-  constructor({ offersApiService }) {
-    this.#offersApiService = offersApiService;
+  constructor({ apiService }) {
+    this.#apiService = apiService;
   }
 
   get data() {
@@ -13,18 +13,9 @@ export class OffersModel {
 
   async init() {
     try {
-      this.#data = await this.#offersApiService.data;
+      this.#data = await this.#apiService.data;
     } catch(err) {
       this.#data = [];
     }
   }
-
-  #getAllItems = (objectsList) => {
-    const res = objectsList.map( (item) => item.offers);
-    const allOffers = [];
-    res.forEach((element) => {
-      allOffers.push(...element);
-    });
-    return allOffers;
-  };
 }

@@ -80,6 +80,6 @@ export default class TripFiltersPresenter {
       return;
     }
 
-    this.#filtersModel.setFilter(UpdateType.MAJOR, filterType);
+    this.#filtersModel.setType(UpdateType.MAJOR, filterType);
   };
 }
