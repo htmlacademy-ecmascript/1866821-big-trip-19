@@ -18,13 +18,4 @@ export class OffersModel {
       this.#data = [];
     }
   }
-
-  #getAllItems = (objectsList) => {
-    const res = objectsList.map( (item) => item.offers);
-    const allOffers = [];
-    res.forEach((element) => {
-      allOffers.push(...element);
-    });
-    return allOffers;
-  };
 }
