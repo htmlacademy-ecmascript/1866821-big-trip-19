@@ -25,19 +25,26 @@ const getValidDateInRange = ({startDate, endDate}) => {
   return `${startDateYear} ${startDateMonth} ${startDateDay} — ${endDateYear} ${endDateMonth} ${endDateDay}`;
 };
 
+const getDestinationBorders = (destinations) => {
+  if(destinations.length > 3) {
+    return `${destinations[0]} ... ${destinations.at(-1)}`;
+  }
+  return `${destinations.join(' — ')}`;
+};
+
 
 const createTripInfoTemplate = ({startDate, endDate, cost, destinations}) =>
   (
     `<section class="trip-main__trip-info  trip-info">
-    <div class="trip-info__main">
-      <h1 class="trip-info__title">${destinations.join(' — ')}</h1>
+      <div class="trip-info__main">
+        <h1 class="trip-info__title">${getDestinationBorders(destinations)}</h1>
 
-      <p class="trip-info__dates">${getValidDateInRange({startDate, endDate})}</p>
-    </div>
+        <p class="trip-info__dates">${getValidDateInRange({startDate, endDate})}</p>
+      </div>
 
-    <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">${cost}</span>
-    </p>
+      <p class="trip-info__cost">
+        Total: &euro;&nbsp;<span class="trip-info__cost-value">${cost}</span>
+      </p>
     </section>`
   );
 

@@ -2,13 +2,7 @@ import { render, replace, remove} from '../framework/render.js';
 import { PointModel } from '../model/point-model.js';
 import PointView from '../view/points/point-view.js';
 import PointEditView from '../view/points/point-edit-view.js';
-import { OffersModel } from '../model/offers-model.js';
-import { mockOffersByType } from '../mock/offersByType.js';
-import { DestinationsModel } from '../model/destinations-model.js';
-import { mockDestinations } from '../mock/destination.js';
-import { mockOffers } from '../mock/offer.js';
 import { UserAction, UpdateType } from '../const/common.js';
-import { isDatesEqual } from '../utils/date.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -21,6 +15,9 @@ export default class TripPointPresenter {
   #handleModeChange = null;
 
   #pointModel = null;
+  #offersModel = null;
+  #destinationsModel = null;
+
   #pointComponent = null;
   #pointEditComponent = null;
 
@@ -29,10 +26,14 @@ export default class TripPointPresenter {
   #point = null;
 
   constructor({
+    offersModel,
+    destinationsModel,
     pointsListContainer,
     dataChange,
     modeChange
   }) {
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#pointsListContainer = pointsListContainer;
     this.#handleDataChange = dataChange;
     this.#handleModeChange = modeChange;
@@ -45,10 +46,7 @@ export default class TripPointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    const offersModel = new OffersModel({offersByType: [...mockOffersByType], offers: [...mockOffers]});
-    const destinationsModel = new DestinationsModel({destinations: [...mockDestinations]});
-
-    this.#pointModel = new PointModel(this.#point, offersModel.data, destinationsModel.data);
+    this.#pointModel = new PointModel(this.#point, this.#offersModel.data, this.#destinationsModel.data);
     this.#pointComponent = new PointView(
       this.#pointModel.previewData,
       {
@@ -94,6 +92,41 @@ export default class TripPointPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
   #replaceEventToForm = () => {
     replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -135,14 +168,11 @@ export default class TripPointPresenter {
   };
 
   #handleFormSubmit = (update) => {
-    const isMinorUpdate = !isDatesEqual(this.#point.dueDate, update.dueDate);
-
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      UpdateType.MINOR,
       update,
     );
-    this.#replaceFormToEvent();
   };
 
   #handleDeleteClick = (point) => {

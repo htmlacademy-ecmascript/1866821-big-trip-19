@@ -7,22 +7,27 @@ export default class TripInfoPresenter {
   #model = null;
   #component = null;
   #parentContainer = null;
-  #destinations = null;
+  #destinationsModel = null;
+  #offersModel = null;
   #pointsModel = null;
 
-  constructor({parentContainer, pointsModel, destinations}) {
+  constructor({parentContainer, pointsModel, destinationsModel, offersModel}) {
     this.#parentContainer = parentContainer;
     this.#pointsModel = pointsModel;
-    this.#destinations = destinations;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
     this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
-    this.#model = new TripInfoModel({
-      pointsModel: this.#pointsModel,
-      destinations: this.#destinations
-    });
-    this.#render();
+    if (this.#pointsModel.points.length !== 0) {
+      this.#model = new TripInfoModel({
+        pointsModel: this.#pointsModel,
+        destinations: this.#destinationsModel.data,
+        offers: this.#offersModel.data
+      });
+      this.#render();
+    }
   }
 
   #render() {

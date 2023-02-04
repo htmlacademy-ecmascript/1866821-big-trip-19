@@ -1,13 +1,7 @@
 import { render, remove, RenderPosition} from '../framework/render.js';
 import PointEditView from '../view/points/point-edit-view.js';
-import {nanoid} from 'nanoid';
 import { UserAction, UpdateType } from '../const/common.js';
 import { PointModel } from '../model/point-model.js';
-import { OffersModel } from '../model/offers-model.js';
-import { DestinationsModel } from '../model/destinations-model.js';
-import { mockOffersByType } from '../mock/offersByType.js';
-import { mockDestinations } from '../mock/destination.js';
-import { mockOffers } from '../mock/offer.js';
 import { BLANK_POINT } from '../const/point.js';
 
 
@@ -16,14 +10,20 @@ export default class NewTripPointPresenter {
   #handleDataChange = null;
   #handleDestroy = null;
   #pointModel = null;
+  #offersModel = null;
+  #destinationsModel = null;
 
   #pointEditComponent = null;
 
   constructor({
+    offersModel,
+    destinationsModel,
     pointsListContainer,
     dataChange,
     destroy
   }) {
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#pointsListContainer = pointsListContainer;
     this.#handleDataChange = dataChange;
     this.#handleDestroy = destroy;
@@ -34,9 +34,7 @@ export default class NewTripPointPresenter {
       return;
     }
 
-    const offersModel = new OffersModel({offersByType: [...mockOffersByType], offers: [...mockOffers]});
-    const destinationsModel = new DestinationsModel({destinations: [...mockDestinations]});
-    this.#pointModel = new PointModel(BLANK_POINT, offersModel.data, destinationsModel.data);
+    this.#pointModel = new PointModel(BLANK_POINT, this.#offersModel.data, this.#destinationsModel.data);
     this.#pointEditComponent = new PointEditView(
       this.#pointModel.fullData,
       {
@@ -63,24 +61,52 @@ export default class NewTripPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  #handleFormSubmit = (task) => {
-    const cloneTask = {...task};
-    cloneTask.id = nanoid();
+  setSaving() {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
+  #handleFormSubmit = (point) => {
+    const clonePoint = {...point};
+    delete clonePoint.id;
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      cloneTask,
+      clonePoint,
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {
+    this.#handleDataChange(
+      UserAction.CANCEL_POINT_EDIT,
+      UpdateType.CLEAR,
+      {...BLANK_POINT},
+    );
     this.destroy();
   };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#handleDataChange(
+        UserAction.CANCEL_POINT_EDIT,
+        UpdateType.CLEAR,
+        {...BLANK_POINT},
+      );
       this.destroy();
     }
   };
