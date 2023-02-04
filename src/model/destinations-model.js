@@ -13,7 +13,7 @@ export class DestinationsModel {
 
   async init() {
     try {
-      this.#data = await this.#destinationsApiService.destinations;
+      this.#data = await this.#destinationsApiService.data;
     } catch(err) {
       this.#data = [];
     }

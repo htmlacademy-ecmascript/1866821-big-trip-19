@@ -47,7 +47,7 @@ export class PointModel {
   }
 
   #getDestinationTitle(id, destinationsList) {
-    const pointDestination = destinationsList.find( (destination) => destination.id === id );
+    const pointDestination = destinationsList.find((destination) => destination.id === Number(id));
     return pointDestination ? pointDestination.name : '';
   }
 

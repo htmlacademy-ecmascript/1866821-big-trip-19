@@ -2,7 +2,7 @@ import ApiService from '../framework/api-service.js';
 import { Url, Method } from '../const/api.js';
 
 export default class PointsApiService extends ApiService {
-  get points() {
+  get data() {
     return this._load({url: Url.POINTS})
       .then(ApiService.parseResponse);
   }
