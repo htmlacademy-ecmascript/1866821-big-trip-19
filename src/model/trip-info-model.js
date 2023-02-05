@@ -15,7 +15,7 @@ export class TripInfoModel {
       startDate: this.#getStartDate(),
       endDate: this.#getEndDate(),
       cost: this.#getCost(),
-      destinations: this.#getDestinations()
+      destinationsTitles: this.#getDestinationsTitles()
     };
   }
 
@@ -73,8 +73,8 @@ export class TripInfoModel {
     return offersSumm;
   };
 
-  #getDestinations = () => {
-    let previosId = '-1';
+  #getDestinationsTitles = () => {
+    let previosId = -1;
     const destinationsIdsNoRepeat = [];
 
     this.#points.forEach((point) => {

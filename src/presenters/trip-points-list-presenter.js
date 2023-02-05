@@ -99,7 +99,7 @@ export default class TripPointsListPresenter {
 
   createPoint = () => {
     this.#sortModel.setCheckedType({checkedType: Sort.DAY});
-    this.#filtersModel.setType(UpdateType.MAJOR, Filters.EVERYTHING);
+    this.#filtersModel.setCheckedType(UpdateType.MAJOR, Filters.EVERYTHING);
     this.#newPointPresenter.init();
   };
 

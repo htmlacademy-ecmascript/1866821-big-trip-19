@@ -25,19 +25,19 @@ const getValidDateInRange = ({startDate, endDate}) => {
   return `${startDateYear} ${startDateMonth} ${startDateDay} — ${endDateYear} ${endDateMonth} ${endDateDay}`;
 };
 
-const getDestinationBorders = (destinations) => {
-  if(destinations.length > 3) {
-    return `${destinations[0]} — ... — ${destinations[destinations.length - 1]}`;
+const getDestinationBorders = (destinationsTitles) => {
+  if(destinationsTitles.length > 3) {
+    return `${destinationsTitles[0]} — ... — ${destinationsTitles[destinationsTitles.length - 1]}`;
   }
-  return `${destinations.join(' — ')}`;
+  return `${destinationsTitles.join(' — ')}`;
 };
 
 
-const createTripInfoTemplate = ({startDate, endDate, cost, destinations}) =>
+const createTripInfoTemplate = ({startDate, endDate, cost, destinationsTitles}) =>
   (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">${getDestinationBorders(destinations)}</h1>
+        <h1 class="trip-info__title">${getDestinationBorders(destinationsTitles)}</h1>
 
         <p class="trip-info__dates">${getValidDateInRange({startDate, endDate})}</p>
       </div>
@@ -55,7 +55,7 @@ export default class TripInfoView extends AbstractView {
     startDate,
     endDate,
     cost,
-    destinations
+    destinationsTitles
   }) {
     super();
 
@@ -63,7 +63,7 @@ export default class TripInfoView extends AbstractView {
       startDate,
       endDate,
       cost,
-      destinations
+      destinationsTitles
     };
   }
 
