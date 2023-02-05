@@ -3,11 +3,7 @@ import { PointModel } from '../model/point-model.js';
 import PointView from '../view/points/point-view.js';
 import PointEditView from '../view/points/point-edit-view.js';
 import { UserAction, UpdateType } from '../const/common.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import { Mode } from '../const/point.js';
 
 export default class TripPointPresenter {
   #pointsListContainer = null;

@@ -1,4 +1,4 @@
-export const PointTypes = {
+const PointTypes = {
   TAXI: 'taxi',
   BUS: 'bus',
   TRAIN: 'train',
@@ -10,9 +10,9 @@ export const PointTypes = {
   RESTAURANT: 'restaurant'
 };
 
-export const DEFAULT_POINT_ID = '-111';
+const DEFAULT_POINT_ID = '-111';
 
-export const BLANK_POINT = {
+const BLANK_POINT = {
   basePrice: '1',
   dateFrom: new Date(Date.now()),
   dateTo: new Date(Date.now()),
@@ -20,4 +20,16 @@ export const BLANK_POINT = {
   isFavorite: false,
   offers: [],
   type: PointTypes.TAXI
+};
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
+export {
+  PointTypes,
+  DEFAULT_POINT_ID,
+  BLANK_POINT,
+  Mode
 };
