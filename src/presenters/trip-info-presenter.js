@@ -23,7 +23,7 @@ export default class TripInfoPresenter {
     if (this.#pointsModel.elements.length !== 0) {
       this.#model = new TripInfoModel({
         pointsModel: this.#pointsModel,
-        destinations: this.#destinationsModel.data,
+        destinations: this.#destinationsModel.elements,
         offers: this.#offersModel.data
       });
       this.#render();

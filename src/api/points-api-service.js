@@ -2,12 +2,12 @@ import ApiService from '../framework/api-service.js';
 import { Url, Method } from '../const/api.js';
 
 export default class PointsApiService extends ApiService {
-  get data() {
+  get elements() {
     return this._load({url: Url.POINTS})
       .then(ApiService.parseResponse);
   }
 
-  update = async (point) => {
+  updateElement = async (point) => {
     const response = await this._load({
       url: `${Url.POINTS}/${point.id}`,
       method: Method.PUT,
@@ -20,7 +20,7 @@ export default class PointsApiService extends ApiService {
     return parsedResponse;
   };
 
-  add = async (point) => {
+  addElement = async (point) => {
     const response = await this._load({
       url: `${Url.POINTS}`,
       method: Method.POST,
@@ -33,7 +33,7 @@ export default class PointsApiService extends ApiService {
     return parsedResponse;
   };
 
-  delete = async (point) => {
+  deleteElement = async (point) => {
     const response = await this._load({
       url: `${Url.POINTS}/${point.id}`,
       method: Method.DELETE,

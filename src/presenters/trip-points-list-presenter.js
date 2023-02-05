@@ -3,7 +3,7 @@ import PointsListView from '../view/points/points-list-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { SortModel } from '../model/sort-model.js';
 import TripPointPresenter from './trip-point-presenter.js';
-import { sortPointsDayDown, sortPointsPriceDown, sortPointsDurationDown } from '../utils/point.js';
+import { sortPointsDayUp, sortPointsPriceDown, sortPointsDurationDown } from '../utils/point.js';
 import { SORT_DEFAULT_ORDER_VALUES, Sort } from '../const/sort.js';
 import { UserAction, UpdateType } from '../const/common.js';
 import { Filters } from '../const/filters.js';
@@ -75,7 +75,7 @@ export default class TripPointsListPresenter {
 
     switch (this.#sortModel.data.checked) {
       case Sort.DAY:
-        return filteredPoints.sort(sortPointsDayDown);
+        return filteredPoints.sort(sortPointsDayUp);
       case Sort.PRICE:
         return filteredPoints.sort(sortPointsPriceDown);
       case Sort.TIME:

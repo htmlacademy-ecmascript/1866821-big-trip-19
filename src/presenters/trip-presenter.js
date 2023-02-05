@@ -86,7 +86,7 @@ export default class TripPresenter {
     await this.#destinationsModel.init();
     await this.#offersModel.init();
 
-    if(this.#destinationsModel.data.length === 0 || this.#offersModel.data.length === 0){
+    if(this.#destinationsModel.elements.length === 0 || this.#offersModel.data.length === 0){
       throw new Error('empty destinations or offers');
     }
   }

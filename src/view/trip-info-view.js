@@ -27,7 +27,7 @@ const getValidDateInRange = ({startDate, endDate}) => {
 
 const getDestinationBorders = (destinations) => {
   if(destinations.length > 3) {
-    return `${destinations[0]} ... ${destinations.at(-1)}`;
+    return `${destinations[0]} — ... — ${destinations[destinations.length - 1]}`;
   }
   return `${destinations.join(' — ')}`;
 };

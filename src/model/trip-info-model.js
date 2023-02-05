@@ -1,3 +1,5 @@
+import { sortPointsDayUp } from '../utils/point.js';
+
 export class TripInfoModel {
   #points = null;
   #destinations = null;
@@ -5,7 +7,7 @@ export class TripInfoModel {
   #data = null;
 
   constructor({pointsModel, destinations, offers}) {
-    this.#points = [...pointsModel.elements];
+    this.#points = [...pointsModel.elements].sort(sortPointsDayUp);
     this.#destinations = [...destinations];
     this.#offersByType = [...offers];
 
