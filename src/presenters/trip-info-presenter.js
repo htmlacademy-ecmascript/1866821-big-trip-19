@@ -24,7 +24,7 @@ export default class TripInfoPresenter {
       this.#model = new TripInfoModel({
         pointsModel: this.#pointsModel,
         destinations: this.#destinationsModel.elements,
-        offers: this.#offersModel.data
+        offers: this.#offersModel.elements
       });
       this.#render();
     }

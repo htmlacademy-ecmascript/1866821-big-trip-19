@@ -46,7 +46,7 @@ export default class TripPointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    this.#pointModel = new PointModel(this.#point, this.#offersModel.data, this.#destinationsModel.elements);
+    this.#pointModel = new PointModel(this.#point, this.#offersModel.elements, this.#destinationsModel.elements);
     this.#pointComponent = new PointView(
       this.#pointModel.previewData,
       {

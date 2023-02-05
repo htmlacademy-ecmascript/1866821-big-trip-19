@@ -1,21 +1,20 @@
 export class OffersModel {
   #apiService = null;
-
-  #data = null;
+  #elemets = null;
 
   constructor({ apiService }) {
     this.#apiService = apiService;
   }
 
-  get data() {
-    return this.#data;
+  get elements() {
+    return this.#elemets;
   }
 
   async init() {
     try {
-      this.#data = await this.#apiService.elements;
+      this.#elemets = await this.#apiService.elements;
     } catch(err) {
-      this.#data = [];
+      this.#elemets = [];
     }
   }
 }
