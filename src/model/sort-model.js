@@ -2,19 +2,19 @@ export class SortModel {
   #data = null;
 
   constructor({
-    list,
-    checked,
-    disabled
+    types,
+    checkedType,
+    disabledTypes
   }) {
     this.#data = {
-      list,
-      checked,
-      disabled
+      types,
+      checkedType,
+      disabledTypes
     };
   }
 
   setCheckedType({checkedType}) {
-    this.#data.checked = checkedType;
+    this.#data.checkedType = checkedType;
   }
 
   get data() {

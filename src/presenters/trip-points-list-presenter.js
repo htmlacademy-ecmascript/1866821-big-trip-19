@@ -54,9 +54,9 @@ export default class TripPointsListPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
 
     this.#sortModel = new SortModel({
-      list: SORT_DEFAULT_ORDER_VALUES.slice(),
-      checked: Sort.DAY,
-      disabled: [Sort.EVENT, Sort.OFFERS]
+      types: SORT_DEFAULT_ORDER_VALUES.slice(),
+      checkedType: Sort.DAY,
+      disabledTypes: [Sort.EVENT, Sort.OFFERS]
     });
 
     this.#newPointPresenter = new NewTripPointPresenter({
@@ -73,7 +73,7 @@ export default class TripPointsListPresenter {
     const points = this.#pointsModel.elements;
     const filteredPoints = filter[this.#filterType](points);
 
-    switch (this.#sortModel.data.checked) {
+    switch (this.#sortModel.data.checkedType) {
       case Sort.DAY:
         return filteredPoints.sort(sortPointsDayUp);
       case Sort.PRICE:
@@ -98,7 +98,7 @@ export default class TripPointsListPresenter {
   }
 
   createPoint = () => {
-    this.#sortModel.checkedType = Sort.DAY;
+    this.#sortModel.setCheckedType({checkedType: Sort.DAY});
     this.#filtersModel.setType(UpdateType.MAJOR, Filters.EVERYTHING);
     this.#newPointPresenter.init();
   };
@@ -173,7 +173,7 @@ export default class TripPointsListPresenter {
 
 
   #handleSortTypeChange = (sortType) => {
-    if (this.#sortModel.data.checked === sortType) {
+    if (this.#sortModel.data.checkedType === sortType) {
       return;
     }
 
@@ -190,7 +190,7 @@ export default class TripPointsListPresenter {
     this.#pointsPresenters.forEach((presenter) => presenter.destroy());
     this.#pointsPresenters.clear();
     if (resetSortType) {
-      this.#sortModel.setCheckedType({checkedType: Sort.DAY });
+      this.#sortModel.setCheckedType({checkedType: Sort.DAY});
     }
   }
 
