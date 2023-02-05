@@ -2,7 +2,7 @@ import EmptyPointsListView from '../view/points/empty-points-list-view.js';
 import { render, remove} from '../framework/render.js';
 import { filter } from '../utils/filters.js';
 import { UpdateType } from '../const/common.js';
-import { FILTERS_DEFAULT_ORDER_VALUES } from '../const/filters.js';
+import { Filters, FILTERS_DEFAULT_ORDER_VALUES } from '../const/filters.js';
 
 export default class EmptyPointsListPresenter {
   #emptyPointsListComponent = null;
@@ -23,8 +23,8 @@ export default class EmptyPointsListPresenter {
     }
   }
 
-  init() {
-    this.#emptyPointsListComponent = new EmptyPointsListView({checkedType: this.#filtersModel.filter});
+  init({checkedType = this.#filtersModel.filter} = {}) {
+    this.#emptyPointsListComponent = new EmptyPointsListView({checkedType});
     this.#renderEmptyPointsList();
   }
 
@@ -32,7 +32,8 @@ export default class EmptyPointsListPresenter {
   #handleModelEvent = (updateType, data) => {
     const filteredPoints = filter[this.#filtersModel.filter](this.#pointsModel.elements);
 
-    const pointsClear = (this.#pointsModel.elements.length === 0 || filteredPoints.length === 0);
+    const pointsClear = (this.#pointsModel.elements.length === 0);
+    const filtersClear = (filteredPoints.length === 0);
 
     const typesForInit = (updateType === UpdateType.CLEAR || updateType === UpdateType.MINOR);
 
@@ -40,7 +41,9 @@ export default class EmptyPointsListPresenter {
       this.clear();
     }
 
-    if (pointsClear && (typesForInit || FILTERS_DEFAULT_ORDER_VALUES.includes(data))) {
+    if (typesForInit && filtersClear && pointsClear) {
+      this.init({checkedType: Filters.EVERYTHING});
+    } else if ((pointsClear || filtersClear) && (typesForInit || FILTERS_DEFAULT_ORDER_VALUES.includes(data))) {
       this.init();
     }
 
