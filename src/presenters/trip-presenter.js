@@ -49,6 +49,10 @@ export default class TripPresenter {
     this.#eventsElement = document.querySelector('.trip-events');
   }
 
+  get points() {
+    return this.#pointsModel.elements;
+  }
+
   init() {
     this.#renderLoading();
     this.#uiBlocker.block();
@@ -150,8 +154,4 @@ export default class TripPresenter {
   #handleNewPointFormClose = () => {
     this.#newEventButtonComponent.element.disabled = false;
   };
-
-  get points() {
-    return this.#pointsModel.elements;
-  }
 }

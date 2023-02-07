@@ -1,12 +1,11 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { BlockerMessage } from '../const/common.js';
 
-const createLoadingTemplate = (message) => (
+const createTemplate = (message) => (
   `<p class='trip-events__msg'>${message}</p>`
 );
 
 export default class LoadingView extends AbstractView {
-
   #message = null;
 
   constructor({message = BlockerMessage.LOAD} = {}) {
@@ -15,6 +14,6 @@ export default class LoadingView extends AbstractView {
   }
 
   get template() {
-    return createLoadingTemplate(this.#message);
+    return createTemplate(this.#message);
   }
 }

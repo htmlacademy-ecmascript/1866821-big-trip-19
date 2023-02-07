@@ -30,6 +30,10 @@ export default class TripInfoPresenter {
     }
   }
 
+  clear() {
+    remove(this.#component);
+  }
+
   #render() {
     this.#component = new TripInfoView(this.#model.data);
     render(this.#component, this.#parentContainer, RenderPosition.AFTERBEGIN);
@@ -41,8 +45,4 @@ export default class TripInfoPresenter {
       this.init();
     }
   };
-
-  clear() {
-    remove(this.#component);
-  }
 }

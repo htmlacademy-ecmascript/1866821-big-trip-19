@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 const DATE_FORMAT_YEAR = 'YYYY';
 const DATE_FORMAT_MONTH = 'MMM';
 const DATE_FORMAT_DAY = 'D';
+const VISIBLE_DESTINATIONS_LIMIT = 3;
 
 const getValidDateInRange = ({startDate, endDate}) => {
 
@@ -26,16 +27,16 @@ const getValidDateInRange = ({startDate, endDate}) => {
 };
 
 const getDestinationBorders = (destinationsTitles) => {
-  if(destinationsTitles.length > 3) {
+  if(destinationsTitles.length > VISIBLE_DESTINATIONS_LIMIT) {
     return `${destinationsTitles[0]} — ... — ${destinationsTitles[destinationsTitles.length - 1]}`;
   }
   return `${destinationsTitles.join(' — ')}`;
 };
 
 
-const createTripInfoTemplate = ({startDate, endDate, cost, destinationsTitles}) =>
+const createTemplate = ({startDate, endDate, cost, destinationsTitles}) =>
   (
-    `<section class="trip-main__trip-info  trip-info">
+    `<section class="trip-main__trip-info trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${getDestinationBorders(destinationsTitles)}</h1>
 
@@ -68,6 +69,6 @@ export default class TripInfoView extends AbstractView {
   }
 
   get template() {
-    return createTripInfoTemplate(this.#data);
+    return createTemplate(this.#data);
   }
 }

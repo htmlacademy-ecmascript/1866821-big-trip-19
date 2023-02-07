@@ -13,11 +13,11 @@ export class SortModel {
     };
   }
 
-  setCheckedType({checkedType}) {
-    this.#data.checkedType = checkedType;
-  }
-
   get data() {
     return this.#data;
+  }
+
+  setCheckedType({checkedType}) {
+    this.#data.checkedType = checkedType;
   }
 }

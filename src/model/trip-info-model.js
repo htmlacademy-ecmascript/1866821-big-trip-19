@@ -19,6 +19,10 @@ export class TripInfoModel {
     };
   }
 
+  get data() {
+    return this.#data;
+  }
+
   #getStartDate = () => {
     let startDate = this.#points[0].dateFrom;
 
@@ -96,8 +100,4 @@ export class TripInfoModel {
 
     return destinationsNames;
   };
-
-  get data() {
-    return this.#data;
-  }
 }

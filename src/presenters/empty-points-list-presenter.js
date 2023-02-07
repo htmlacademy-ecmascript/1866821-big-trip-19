@@ -28,6 +28,13 @@ export default class EmptyPointsListPresenter {
     this.#renderEmptyPointsList();
   }
 
+  clear() {
+    remove(this.#emptyPointsListComponent);
+  }
+
+  #renderEmptyPointsList() {
+    render(this.#emptyPointsListComponent, this.#container);
+  }
 
   #handleModelEvent = (updateType, data) => {
     const filteredPoints = filter[this.#filtersModel.filter](this.#pointsModel.elements);
@@ -43,18 +50,11 @@ export default class EmptyPointsListPresenter {
 
     if (typesForInit && filtersClear && pointsClear) {
       this.init({checkedType: Filters.EVERYTHING});
-    } else if ((pointsClear || filtersClear) && (typesForInit || FILTERS_DEFAULT_ORDER_VALUES.includes(data))) {
+      return;
+    }
+    if ((pointsClear || filtersClear) && (typesForInit || FILTERS_DEFAULT_ORDER_VALUES.includes(data))) {
       this.init();
     }
 
   };
-
-  clear() {
-    remove(this.#emptyPointsListComponent);
-  }
-
-  #renderEmptyPointsList() {
-    render(this.#emptyPointsListComponent, this.#container);
-  }
-
 }

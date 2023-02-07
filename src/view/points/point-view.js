@@ -95,7 +95,6 @@ export default class PointView extends AbstractView {
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-
   constructor({
     id,
     basePrice,
@@ -137,7 +136,6 @@ export default class PointView extends AbstractView {
     evt.preventDefault();
     this.#handleEditClick();
   };
-
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();

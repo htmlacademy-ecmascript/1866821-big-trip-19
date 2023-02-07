@@ -4,6 +4,7 @@ import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT__DATE_SIMPLE } 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { DEFAULT_POINT_ID } from '../../const/point.js';
+import he from 'he';
 
 const getCheckedAttribute = ({type, checked}) => (type === checked) ? 'checked' : '';
 const getCheckedAttributeById = ({id, idsArr}) => idsArr.includes(id) ? 'checked' : '';
@@ -323,16 +324,6 @@ export default class PointEditView extends AbstractStatefulView {
     return createPointChangeTemplate(this._state);
   }
 
-  #editClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleEditClick();
-  };
-
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleFormSubmit(PointEditView.parseStateToPoint(this._state));
-  };
-
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
@@ -352,77 +343,25 @@ export default class PointEditView extends AbstractStatefulView {
     this.#setDatepickers();
   }
 
-  #typeChangeHandler = (evt) => {
-    evt.preventDefault();
-    this.updateElement({
-      checkedType: evt.target.value,
-      checkedOffersIds: []
-    });
-  };
+  removeElement() {
+    super.removeElement();
 
-  #priceChangeHandler = (evt) => {
-    evt.preventDefault();
-
-    let priceAsNumber = Math.round(Number(evt.target.value));
-
-    if (evt.target.value === '') {
-      evt.target.value = this._state.basePrice;
-      return;
-    } else if (priceAsNumber <= 0) {
-      evt.target.value = '1';
-      priceAsNumber = 1;
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
     }
 
-    this.updateElement({
-      basePrice: `${priceAsNumber}`,
-    });
-  };
-
-  #offersChangeHandler = (evt) => {
-    evt.preventDefault();
-    const currentOfferId = Number(evt.target.dataset.offerId);
-
-    const idIndex = this._state.checkedOffersIds.indexOf(currentOfferId);
-
-    if (evt.target.checked && (idIndex === -1)){
-      this._state.checkedOffersIds.push(currentOfferId);
-      return;
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
     }
+  }
 
-    if (!evt.target.checked && (idIndex !== -1)){
-      this._state.checkedOffersIds.splice(idIndex, 1);
-    }
-  };
-
-
-  #destinationChangeHandler = (evt) => {
-    evt.preventDefault();
-
-    if (evt.target.value === '') {
-      const checkedDestination = this._state.destinationsList.find((destination) => destination.id === Number(this._state.checkedDestinationId));
-      if (!checkedDestination) {
-        return;
-      }
-      evt.target.value = checkedDestination.name;
-      return;
-    }
-
-    const currentDestinationOption = document.querySelector(`#destination-list-1 #${evt.target.value}`);
-
-    this.updateElement({
-      checkedDestinationId: currentDestinationOption.dataset.destinationId
-    });
-  };
-
-  #getDestinationsByValue = (userDestinaton) => this._state.destinationsList.filter((destination) => Object.values(destination).includes(userDestinaton));
-
-  #destinationNameFillingHandler = (evt) => {
-    const userDestinaton = evt.target.value;
-    evt.preventDefault();
-    if(this.#getDestinationsByValue(userDestinaton).length === 0) {
-      evt.target.value = '';
-    }
-  };
+  reset(point) {
+    this.updateElement(
+      PointEditView.parsePointToState(point)
+    );
+  }
 
   #setDatepickers() {
     if (this._state.dateFrom && this._state.dateTo) {
@@ -449,6 +388,91 @@ export default class PointEditView extends AbstractStatefulView {
     }
   }
 
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      checkedType: evt.target.value,
+      checkedOffersIds: []
+    });
+  };
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit(PointEditView.parseStateToPoint(this._state));
+  };
+
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    let priceAsNumber = Math.round(Number(he.encode(evt.target.value)));
+
+    if (evt.target.value === '') {
+      evt.target.value = this._state.basePrice;
+      return;
+    }
+
+    if (priceAsNumber <= 0) {
+      evt.target.value = '1';
+      priceAsNumber = 1;
+    }
+
+    this.updateElement({
+      basePrice: `${priceAsNumber}`,
+    });
+  };
+
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+    const currentOfferId = Number(evt.target.dataset.offerId);
+
+    const idIndex = this._state.checkedOffersIds.indexOf(currentOfferId);
+
+    if (evt.target.checked && (idIndex === -1)){
+      this._state.checkedOffersIds.push(currentOfferId);
+      return;
+    }
+
+    if (!evt.target.checked && (idIndex !== -1)){
+      this._state.checkedOffersIds.splice(idIndex, 1);
+    }
+  };
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    const destinationValue = he.encode(evt.target.value);
+
+    if (destinationValue === '') {
+      const checkedDestination = this._state.destinationsList.find((destination) => destination.id === Number(this._state.checkedDestinationId));
+      if (!checkedDestination) {
+        return;
+      }
+      evt.target.value = he.encode(checkedDestination.name);
+      return;
+    }
+
+    const currentDestinationOption = document.querySelector(`#destination-list-1 #${destinationValue}`);
+
+    this.updateElement({
+      checkedDestinationId: currentDestinationOption.dataset.destinationId
+    });
+  };
+
+  #getDestinationsByValue = (userDestinaton) => this._state.destinationsList.filter((destination) => Object.values(destination).includes(userDestinaton));
+
+  #destinationNameFillingHandler = (evt) => {
+    const userDestinaton = evt.target.value;
+    evt.preventDefault();
+    if(this.#getDestinationsByValue(userDestinaton).length === 0) {
+      evt.target.value = '';
+    }
+  };
+
   #dateFromCloseHandler = ([userDate]) => {
     this.updateElement({
       dateFrom: userDate,
@@ -461,26 +485,6 @@ export default class PointEditView extends AbstractStatefulView {
       dateTo: userDate,
     });
   };
-
-  removeElement() {
-    super.removeElement();
-
-    if (this.#datepickerFrom) {
-      this.#datepickerFrom.destroy();
-      this.#datepickerFrom = null;
-    }
-
-    if (this.#datepickerTo) {
-      this.#datepickerTo.destroy();
-      this.#datepickerTo = null;
-    }
-  }
-
-  reset(point) {
-    this.updateElement(
-      PointEditView.parsePointToState(point)
-    );
-  }
 
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();

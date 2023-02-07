@@ -17,7 +17,6 @@ export default class TripPointPresenter {
   #pointComponent = null;
   #pointEditComponent = null;
 
-
   #mode = Mode.DEFAULT;
   #point = null;
 
@@ -34,7 +33,6 @@ export default class TripPointPresenter {
     this.#handleDataChange = dataChange;
     this.#handleModeChange = modeChange;
   }
-
 
   init(point) {
     this.#point = point;
@@ -135,7 +133,6 @@ export default class TripPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   };
-
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {

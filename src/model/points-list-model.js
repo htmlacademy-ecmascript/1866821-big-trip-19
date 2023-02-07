@@ -3,7 +3,6 @@ import { UpdateType } from '../const/common.js';
 
 export default class PointsListModel extends Observable {
   #apiService = null;
-
   #elements = null;
 
   constructor({apiService}) {
