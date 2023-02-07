@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 const DATE_FORMAT_YEAR = 'YYYY';
 const DATE_FORMAT_MONTH = 'MMM';
 const DATE_FORMAT_DAY = 'D';
+const VISIBLE_DESTINATIONS_LIMIT = 3;
 
 const getValidDateInRange = ({startDate, endDate}) => {
 
@@ -25,19 +26,19 @@ const getValidDateInRange = ({startDate, endDate}) => {
   return `${startDateYear} ${startDateMonth} ${startDateDay} — ${endDateYear} ${endDateMonth} ${endDateDay}`;
 };
 
-const getDestinationBorders = (destinations) => {
-  if(destinations.length > 3) {
-    return `${destinations[0]} ... ${destinations.at(-1)}`;
+const getDestinationBorders = (destinationsTitles) => {
+  if(destinationsTitles.length > VISIBLE_DESTINATIONS_LIMIT) {
+    return `${destinationsTitles[0]} — ... — ${destinationsTitles[destinationsTitles.length - 1]}`;
   }
-  return `${destinations.join(' — ')}`;
+  return `${destinationsTitles.join(' — ')}`;
 };
 
 
-const createTripInfoTemplate = ({startDate, endDate, cost, destinations}) =>
+const createTemplate = ({startDate, endDate, cost, destinationsTitles}) =>
   (
-    `<section class="trip-main__trip-info  trip-info">
+    `<section class="trip-main__trip-info trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">${getDestinationBorders(destinations)}</h1>
+        <h1 class="trip-info__title">${getDestinationBorders(destinationsTitles)}</h1>
 
         <p class="trip-info__dates">${getValidDateInRange({startDate, endDate})}</p>
       </div>
@@ -55,7 +56,7 @@ export default class TripInfoView extends AbstractView {
     startDate,
     endDate,
     cost,
-    destinations
+    destinationsTitles
   }) {
     super();
 
@@ -63,11 +64,11 @@ export default class TripInfoView extends AbstractView {
       startDate,
       endDate,
       cost,
-      destinations
+      destinationsTitles
     };
   }
 
   get template() {
-    return createTripInfoTemplate(this.#data);
+    return createTemplate(this.#data);
   }
 }

@@ -1,11 +1,11 @@
 import AbstractView from '../framework/view/abstract-view';
 import {bringFirstCharToUpperCase} from '../utils/common.js';
 
-const getCheckedAttribute = ({sortName, checked}) => (sortName === checked) ? 'checked' : '';
-const getDisabledAttribute = ({sortName, disabled}) => (disabled.includes(sortName)) ? 'disabled' : '';
+const getCheckedAttribute = ({sortName, checkedType}) => (sortName === checkedType) ? 'checked' : '';
+const getDisabledAttribute = ({sortName, disabledTypes}) => (disabledTypes.includes(sortName)) ? 'disabled' : '';
 
-const createItemRepeatingTemplate = ({list, checked, disabled}) =>
-  list.map((sortName) => (
+const createItemRepeatingTemplate = ({types, checkedType, disabledTypes}) =>
+  types.map((sortName) => (
     `<div class="trip-sort__item  trip-sort__item--${sortName}">
       <input id="sort-${sortName}" 
         class="trip-sort__input  
@@ -13,8 +13,8 @@ const createItemRepeatingTemplate = ({list, checked, disabled}) =>
         name="trip-sort" 
         value="sort-${sortName}"
         data-sort-type="${sortName}"
-        ${getCheckedAttribute({sortName, checked})}
-        ${getDisabledAttribute({sortName, disabled})}
+        ${getCheckedAttribute({sortName, checkedType})}
+        ${getDisabledAttribute({sortName, disabledTypes})}
       >
       <label class="trip-sort__btn" 
         for="sort-${sortName}" 
@@ -24,10 +24,10 @@ const createItemRepeatingTemplate = ({list, checked, disabled}) =>
     </div>`)
   ).join('');
 
-const createFormTemplate = ({list, checked, disabled}) =>
+const createFormTemplate = ({types, checkedType, disabledTypes}) =>
   (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      ${createItemRepeatingTemplate({list, checked, disabled})}
+      ${createItemRepeatingTemplate({types, checkedType, disabledTypes})}
     </form>`
   );
 
@@ -36,10 +36,10 @@ export default class SortView extends AbstractView {
   #data = null;
   #handleSortTypeChange = null;
 
-  constructor({list, checked, disabled}, {sortTypeChange}) {
+  constructor({types, checkedType, disabledTypes}, {sortTypeChange}) {
     super();
 
-    this.#data = {list, checked, disabled};
+    this.#data = {types, checkedType, disabledTypes};
     this.#handleSortTypeChange = sortTypeChange;
     this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }

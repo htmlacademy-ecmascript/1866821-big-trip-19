@@ -3,7 +3,7 @@ import PointsListView from '../view/points/points-list-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { SortModel } from '../model/sort-model.js';
 import TripPointPresenter from './trip-point-presenter.js';
-import { sortPointsDayDown, sortPointsPriceDown, sortPointsDurationDown } from '../utils/point.js';
+import { sortPointsDayUp, sortPointsPriceDown, sortPointsDurationDown } from '../utils/point.js';
 import { SORT_DEFAULT_ORDER_VALUES, Sort } from '../const/sort.js';
 import { UserAction, UpdateType } from '../const/common.js';
 import { Filters } from '../const/filters.js';
@@ -54,9 +54,9 @@ export default class TripPointsListPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
 
     this.#sortModel = new SortModel({
-      list: SORT_DEFAULT_ORDER_VALUES.slice(),
-      checked: Sort.DAY,
-      disabled: [Sort.EVENT, Sort.OFFERS]
+      types: SORT_DEFAULT_ORDER_VALUES.slice(),
+      checkedType: Sort.DAY,
+      disabledTypes: [Sort.EVENT, Sort.OFFERS]
     });
 
     this.#newPointPresenter = new NewTripPointPresenter({
@@ -70,12 +70,12 @@ export default class TripPointsListPresenter {
 
   get points() {
     this.#filterType = this.#filtersModel.filter;
-    const points = this.#pointsModel.points;
+    const points = this.#pointsModel.elements;
     const filteredPoints = filter[this.#filterType](points);
 
-    switch (this.#sortModel.data.checked) {
+    switch (this.#sortModel.data.checkedType) {
       case Sort.DAY:
-        return filteredPoints.sort(sortPointsDayDown);
+        return filteredPoints.sort(sortPointsDayUp);
       case Sort.PRICE:
         return filteredPoints.sort(sortPointsPriceDown);
       case Sort.TIME:
@@ -86,7 +86,7 @@ export default class TripPointsListPresenter {
   }
 
   init() {
-    if (this.#pointsModel.points.length !== 0) {
+    if (this.#pointsModel.elements.length !== 0) {
       this.#renderSort();
     }
     this.#renderPointsList();
@@ -98,99 +98,17 @@ export default class TripPointsListPresenter {
   }
 
   createPoint = () => {
-    this.#sortModel.checkedType = Sort.DAY;
-    this.#filtersModel.setFilter(UpdateType.MAJOR, Filters.EVERYTHING);
+    this.#sortModel.setCheckedType({checkedType: Sort.DAY});
+    this.#filtersModel.setCheckedType(UpdateType.MAJOR, Filters.EVERYTHING);
     this.#newPointPresenter.init();
   };
-
-  #handleModeChange = () => {
-    this.#newPointPresenter.destroy();
-    this.#pointsPresenters.forEach((presenter) => presenter.resetView());
-  };
-
-
-  #handleViewAction = async (actionType, updateType, update) => {
-    this.#uiBlocker.block();
-
-    switch (actionType) {
-      case UserAction.UPDATE_POINT:
-        this.#pointsPresenters.get(update.id).setSaving();
-        try {
-          await this.#pointsModel.updatePoints(updateType, update);
-        } catch(err) {
-          this.#pointsPresenters.get(update.id).setAborting();
-        }
-        break;
-      case UserAction.ADD_POINT:
-        this.#newPointPresenter.setSaving();
-        try {
-          await this.#pointsModel.addPoint(updateType, update);
-        } catch(err) {
-          this.#newPointPresenter.setAborting();
-        }
-        break;
-      case UserAction.DELETE_POINT:
-        this.#pointsPresenters.get(update.id).setDeleting();
-        try {
-          await this.#pointsModel.deletePoint(updateType, update);
-        } catch(err) {
-          this.#pointsPresenters.get(update.id).setAborting();
-        }
-        break;
-      case UserAction.CANCEL_POINT_EDIT:
-        this.#pointsModel.keepPoints(updateType, update);
-        break;
-    }
-
-    this.#uiBlocker.unblock();
-  };
-
-
-  #handleModelEvent = (updateType, data) => {
-    switch (updateType) {
-      case UpdateType.PATCH:
-        this.#pointsPresenters.get(data.id).init(data);
-        break;
-      case UpdateType.MINOR:
-        this.#clearPointsList();
-        if (this.#pointsModel.points.length === 0) {
-          this.#clearSort();
-        }
-        this.#renderPointsList();
-        break;
-      case UpdateType.MAJOR:
-        this.#clearSort();
-        this.#clearPointsList({resetSortType: true});
-        this.#renderSort();
-        this.#renderPointsList();
-        break;
-      case UpdateType.INIT:
-        this.#renderSort();
-        this.#renderPointsList();
-        break;
-    }
-  };
-
-
-  #handleSortTypeChange = (sortType) => {
-    if (this.#sortModel.data.checked === sortType) {
-      return;
-    }
-
-    this.#sortModel.setCheckedType({checkedType: sortType});
-    this.#clearPointsList();
-    this.#clearSort();
-    this.#renderSort();
-    this.#renderPointsList();
-  };
-
 
   #clearPointsList({resetSortType = false} = {}) {
     this.#newPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.destroy());
     this.#pointsPresenters.clear();
     if (resetSortType) {
-      this.#sortModel.setCheckedType({checkedType: Sort.DAY });
+      this.#sortModel.setCheckedType({checkedType: Sort.DAY});
     }
   }
 
@@ -217,7 +135,6 @@ export default class TripPointsListPresenter {
     this.#pointsPresenters.set(point.id, pointPresenter);
   };
 
-
   #renderPointsList = () => {
     render(this.#pointsListComponent, this.#tripContainer);
 
@@ -226,4 +143,81 @@ export default class TripPointsListPresenter {
       .forEach((point) => this.#renderPoint(point));
   };
 
+  #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
+    this.#pointsPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
+    switch (actionType) {
+      case UserAction.UPDATE_POINT:
+        this.#pointsPresenters.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updateElements(updateType, update);
+        } catch(err) {
+          this.#pointsPresenters.get(update.id).setAborting();
+        }
+        break;
+      case UserAction.ADD_POINT:
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.addElement(updateType, update);
+        } catch(err) {
+          this.#newPointPresenter.setAborting();
+        }
+        break;
+      case UserAction.DELETE_POINT:
+        this.#pointsPresenters.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deleteElement(updateType, update);
+        } catch(err) {
+          this.#pointsPresenters.get(update.id).setAborting();
+        }
+        break;
+      case UserAction.CANCEL_POINT_EDIT:
+        this.#pointsModel.keepPoints(updateType, update);
+        break;
+    }
+
+    this.#uiBlocker.unblock();
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#pointsPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearPointsList();
+        if (this.#pointsModel.elements.length === 0) {
+          this.#clearSort();
+        }
+        this.#renderPointsList();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearSort();
+        this.#clearPointsList({resetSortType: true});
+        this.#renderSort();
+        this.#renderPointsList();
+        break;
+      case UpdateType.INIT:
+        this.#renderSort();
+        this.#renderPointsList();
+        break;
+    }
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#sortModel.data.checkedType === sortType) {
+      return;
+    }
+
+    this.#sortModel.setCheckedType({checkedType: sortType});
+    this.#clearPointsList();
+    this.#clearSort();
+    this.#renderSort();
+    this.#renderPointsList();
+  };
 }

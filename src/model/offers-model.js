@@ -1,21 +1,20 @@
 export class OffersModel {
-  #offersApiService = null;
+  #apiService = null;
+  #elemets = null;
 
-  #data = null;
-
-  constructor({ offersApiService }) {
-    this.#offersApiService = offersApiService;
+  constructor({ apiService }) {
+    this.#apiService = apiService;
   }
 
-  get data() {
-    return this.#data;
+  get elements() {
+    return this.#elemets;
   }
 
   async init() {
     try {
-      this.#data = await this.#offersApiService.offers;
+      this.#elemets = await this.#apiService.elements;
     } catch(err) {
-      this.#data = [];
+      this.#elemets = [];
     }
   }
 }

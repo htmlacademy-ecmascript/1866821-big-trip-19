@@ -46,6 +46,14 @@ export class PointModel {
     };
   }
 
+  get previewData() {
+    return this.#previewData;
+  }
+
+  get fullData() {
+    return this.#fullData;
+  }
+
   #getDestinationTitle(id, destinationsList) {
     const pointDestination = destinationsList.find((destination) => destination.id === Number(id));
 
@@ -57,14 +65,6 @@ export class PointModel {
     const checkedOffersListOfType = allOffersListOfType.filter((offer) => checkedOffersIds.includes(offer.id));
 
     return checkedOffersListOfType;
-  }
-
-  get previewData() {
-    return this.#previewData;
-  }
-
-  get fullData() {
-    return this.#fullData;
   }
 
 }

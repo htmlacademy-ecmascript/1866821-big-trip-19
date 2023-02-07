@@ -28,7 +28,7 @@ export default class TripFiltersPresenter {
 
 
   get filters() {
-    const points = this.#pointsModel.points;
+    const points = this.#pointsModel.elements;
 
     return [
       {
@@ -80,6 +80,6 @@ export default class TripFiltersPresenter {
       return;
     }
 
-    this.#filtersModel.setFilter(UpdateType.MAJOR, filterType);
+    this.#filtersModel.setCheckedType(UpdateType.MAJOR, filterType);
   };
 }

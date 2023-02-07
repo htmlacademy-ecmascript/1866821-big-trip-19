@@ -49,6 +49,10 @@ export default class TripPresenter {
     this.#eventsElement = document.querySelector('.trip-events');
   }
 
+  get points() {
+    return this.#pointsModel.elements;
+  }
+
   init() {
     this.#renderLoading();
     this.#uiBlocker.block();
@@ -77,16 +81,16 @@ export default class TripPresenter {
     const destinationsApiService = new DestinationsApiService(END_POINT, AUTHORIZATION);
     const offersApiService = new OffersApiService(END_POINT, AUTHORIZATION);
 
-    this.#pointsModel = new PointsListModel({pointsApiService});
-    this.#destinationsModel = new DestinationsModel({destinationsApiService});
-    this.#offersModel = new OffersModel({offersApiService});
+    this.#pointsModel = new PointsListModel({apiService: pointsApiService});
+    this.#destinationsModel = new DestinationsModel({apiService: destinationsApiService});
+    this.#offersModel = new OffersModel({apiService: offersApiService});
     this.#filtersModel = new FiltersModel();
 
     await this.#pointsModel.init();
     await this.#destinationsModel.init();
     await this.#offersModel.init();
 
-    if(this.#destinationsModel.data.length === 0 || this.#offersModel.data.length === 0){
+    if(this.#destinationsModel.elements.length === 0 || this.#offersModel.elements.length === 0){
       throw new Error('empty destinations or offers');
     }
   }
@@ -150,8 +154,4 @@ export default class TripPresenter {
   #handleNewPointFormClose = () => {
     this.#newEventButtonComponent.element.disabled = false;
   };
-
-  get points() {
-    return this.#pointsModel.points;
-  }
 }

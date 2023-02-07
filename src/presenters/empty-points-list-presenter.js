@@ -2,7 +2,7 @@ import EmptyPointsListView from '../view/points/empty-points-list-view.js';
 import { render, remove} from '../framework/render.js';
 import { filter } from '../utils/filters.js';
 import { UpdateType } from '../const/common.js';
-import { FILTERS_DEFAULT_ORDER_VALUES } from '../const/filters.js';
+import { Filters, FILTERS_DEFAULT_ORDER_VALUES } from '../const/filters.js';
 
 export default class EmptyPointsListPresenter {
   #emptyPointsListComponent = null;
@@ -18,33 +18,15 @@ export default class EmptyPointsListPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
 
-    if (this.#pointsModel.points.length === 0 && !this.#emptyPointsListComponent) {
+    if (this.#pointsModel.elements.length === 0 && !this.#emptyPointsListComponent) {
       this.init();
     }
   }
 
-  init() {
-    this.#emptyPointsListComponent = new EmptyPointsListView({checkedType: this.#filtersModel.filter});
+  init({checkedType = this.#filtersModel.filter} = {}) {
+    this.#emptyPointsListComponent = new EmptyPointsListView({checkedType});
     this.#renderEmptyPointsList();
   }
-
-
-  #handleModelEvent = (updateType, data) => {
-    const filteredPoints = filter[this.#filtersModel.filter](this.#pointsModel.points);
-
-    const pointsClear = (this.#pointsModel.points.length === 0 || filteredPoints.length === 0);
-
-    const typesForInit = (updateType === UpdateType.CLEAR || updateType === UpdateType.MINOR);
-
-    if (this.#emptyPointsListComponent) {
-      this.clear();
-    }
-
-    if (pointsClear && (typesForInit || FILTERS_DEFAULT_ORDER_VALUES.includes(data))) {
-      this.init();
-    }
-
-  };
 
   clear() {
     remove(this.#emptyPointsListComponent);
@@ -54,4 +36,25 @@ export default class EmptyPointsListPresenter {
     render(this.#emptyPointsListComponent, this.#container);
   }
 
+  #handleModelEvent = (updateType, data) => {
+    const filteredPoints = filter[this.#filtersModel.filter](this.#pointsModel.elements);
+
+    const pointsClear = (this.#pointsModel.elements.length === 0);
+    const filtersClear = (filteredPoints.length === 0);
+
+    const typesForInit = (updateType === UpdateType.CLEAR || updateType === UpdateType.MINOR);
+
+    if (this.#emptyPointsListComponent) {
+      this.clear();
+    }
+
+    if (typesForInit && filtersClear && pointsClear) {
+      this.init({checkedType: Filters.EVERYTHING});
+      return;
+    }
+    if ((pointsClear || filtersClear) && (typesForInit || FILTERS_DEFAULT_ORDER_VALUES.includes(data))) {
+      this.init();
+    }
+
+  };
 }

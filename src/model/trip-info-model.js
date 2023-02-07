@@ -1,3 +1,5 @@
+import { sortPointsDayUp } from '../utils/point.js';
+
 export class TripInfoModel {
   #points = null;
   #destinations = null;
@@ -5,7 +7,7 @@ export class TripInfoModel {
   #data = null;
 
   constructor({pointsModel, destinations, offers}) {
-    this.#points = [...pointsModel.points];
+    this.#points = [...pointsModel.elements].sort(sortPointsDayUp);
     this.#destinations = [...destinations];
     this.#offersByType = [...offers];
 
@@ -13,8 +15,12 @@ export class TripInfoModel {
       startDate: this.#getStartDate(),
       endDate: this.#getEndDate(),
       cost: this.#getCost(),
-      destinations: this.#getDestinations()
+      destinationsTitles: this.#getDestinationsTitles()
     };
+  }
+
+  get data() {
+    return this.#data;
   }
 
   #getStartDate = () => {
@@ -71,8 +77,8 @@ export class TripInfoModel {
     return offersSumm;
   };
 
-  #getDestinations = () => {
-    let previosId = '-1';
+  #getDestinationsTitles = () => {
+    let previosId = -1;
     const destinationsIdsNoRepeat = [];
 
     this.#points.forEach((point) => {
@@ -94,8 +100,4 @@ export class TripInfoModel {
 
     return destinationsNames;
   };
-
-  get data() {
-    return this.#data;
-  }
 }

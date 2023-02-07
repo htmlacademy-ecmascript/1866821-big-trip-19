@@ -3,11 +3,7 @@ import { PointModel } from '../model/point-model.js';
 import PointView from '../view/points/point-view.js';
 import PointEditView from '../view/points/point-edit-view.js';
 import { UserAction, UpdateType } from '../const/common.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import { Mode } from '../const/point.js';
 
 export default class TripPointPresenter {
   #pointsListContainer = null;
@@ -20,7 +16,6 @@ export default class TripPointPresenter {
 
   #pointComponent = null;
   #pointEditComponent = null;
-
 
   #mode = Mode.DEFAULT;
   #point = null;
@@ -39,14 +34,13 @@ export default class TripPointPresenter {
     this.#handleModeChange = modeChange;
   }
 
-
   init(point) {
     this.#point = point;
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    this.#pointModel = new PointModel(this.#point, this.#offersModel.data, this.#destinationsModel.data);
+    this.#pointModel = new PointModel(this.#point, this.#offersModel.elements, this.#destinationsModel.elements);
     this.#pointComponent = new PointView(
       this.#pointModel.previewData,
       {
@@ -139,7 +133,6 @@ export default class TripPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   };
-
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {

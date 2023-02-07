@@ -34,7 +34,7 @@ export default class NewTripPointPresenter {
       return;
     }
 
-    this.#pointModel = new PointModel(BLANK_POINT, this.#offersModel.data, this.#destinationsModel.data);
+    this.#pointModel = new PointModel(BLANK_POINT, this.#offersModel.elements, this.#destinationsModel.elements);
     this.#pointEditComponent = new PointEditView(
       this.#pointModel.fullData,
       {

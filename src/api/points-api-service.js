@@ -2,12 +2,12 @@ import ApiService from '../framework/api-service.js';
 import { Url, Method } from '../const/api.js';
 
 export default class PointsApiService extends ApiService {
-  get points() {
+  get elements() {
     return this._load({url: Url.POINTS})
       .then(ApiService.parseResponse);
   }
 
-  async updatePoint(point) {
+  updateElement = async (point) => {
     const response = await this._load({
       url: `${Url.POINTS}/${point.id}`,
       method: Method.PUT,
@@ -18,9 +18,9 @@ export default class PointsApiService extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
-  }
+  };
 
-  async addPoint(point) {
+  addElement = async (point) => {
     const response = await this._load({
       url: `${Url.POINTS}`,
       method: Method.POST,
@@ -31,18 +31,18 @@ export default class PointsApiService extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
-  }
+  };
 
-  async deletePoint(point) {
+  deleteElement = async (point) => {
     const response = await this._load({
       url: `${Url.POINTS}/${point.id}`,
       method: Method.DELETE,
     });
 
     return response;
-  }
+  };
 
-  #adaptToServer(point) {
+  #adaptToServer = (point) => {
     const adaptedPoint = {...point,
       'base_price': Number(point.basePrice),
       'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
@@ -57,5 +57,5 @@ export default class PointsApiService extends ApiService {
     delete adaptedPoint.isFavorite;
 
     return adaptedPoint;
-  }
+  };
 }

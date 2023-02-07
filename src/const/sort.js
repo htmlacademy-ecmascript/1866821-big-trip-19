@@ -1,4 +1,4 @@
-export const Sort = {
+const Sort = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -6,10 +6,15 @@ export const Sort = {
   OFFERS: 'offers'
 };
 
-export const SORT_DEFAULT_ORDER_VALUES = [
+const SORT_DEFAULT_ORDER_VALUES = [
   Sort.DAY,
   Sort.EVENT,
   Sort.TIME,
   Sort.PRICE,
   Sort.OFFERS
 ];
+
+export {
+  Sort,
+  SORT_DEFAULT_ORDER_VALUES
+};

@@ -23,5 +23,9 @@ const BlockerTimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
-
-export {UserAction, UpdateType, BlockerMessage, BlockerTimeLimit};
+export {
+  UserAction,
+  UpdateType,
+  BlockerMessage,
+  BlockerTimeLimit
+};

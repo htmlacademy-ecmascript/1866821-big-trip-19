@@ -1,7 +1,7 @@
 import AbstractView from '../../framework/view/abstract-view';
 import { EmptyPointsListType } from '../../const/filters';
 
-const createEmptyPointsTemplate = (checkedType) => {
+const createTemplate = (checkedType) => {
 
   const message = EmptyPointsListType[checkedType];
 
@@ -19,6 +19,6 @@ export default class EmptyPointsListView extends AbstractView {
   }
 
   get template() {
-    return createEmptyPointsTemplate(this.#checkedType);
+    return createTemplate(this.#checkedType);
   }
 }

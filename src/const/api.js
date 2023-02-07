@@ -14,4 +14,9 @@ const Url = {
   OFFERS: 'offers'
 };
 
-export { AUTHORIZATION, END_POINT, Method, Url };
+export {
+  AUTHORIZATION,
+  END_POINT,
+  Method,
+  Url
+};
