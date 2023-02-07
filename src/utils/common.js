@@ -1,5 +1,3 @@
-const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
-
 const bringFirstCharToUpperCase = (inputString) => {
   if (!inputString) {
     return inputString;
@@ -8,6 +6,5 @@ const bringFirstCharToUpperCase = (inputString) => {
 };
 
 export {
-  getRandomArrayElement,
   bringFirstCharToUpperCase
 };
