@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
 import { bringFirstCharToUpperCase } from '../../utils/common.js';
-import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT__DATE_SIMPLE } from '../../utils/date.js';
+import { bringToCommonEventDate, firstDateIsAfterSecond, CURRENT_DATE_SIMPLE } from '../../utils/date.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { DEFAULT_POINT_ID } from '../../const/point.js';
@@ -370,9 +370,9 @@ export default class PointEditView extends AbstractStatefulView {
         {
           dateFormat: 'd/m/y H:i',
           enableTime: true,
-          minDate: CURRENT__DATE_SIMPLE,
+          minDate: CURRENT_DATE_SIMPLE,
           defaultDate: this._state.dateFrom,
-          onClose: this.#dateFromCloseHandler
+          onChange: this.#dateFromChangeHandler
         },
       );
       this.#datepickerTo = flatpickr(
@@ -382,7 +382,7 @@ export default class PointEditView extends AbstractStatefulView {
           enableTime: true,
           minDate: this._state.dateFrom,
           defaultDate: this._state.dateTo,
-          onClose: this.#dateToCloseHandler
+          onChange: this.#dateToChangeHandler
         },
       );
     }
@@ -421,7 +421,7 @@ export default class PointEditView extends AbstractStatefulView {
       priceAsNumber = 1;
     }
 
-    this.updateElement({
+    this._setState({
       basePrice: `${priceAsNumber}`,
     });
   };
@@ -458,8 +458,8 @@ export default class PointEditView extends AbstractStatefulView {
 
     const currentDestinationOption = document.querySelector(`#destination-list-1 #${destinationValue}`);
 
-    this.updateElement({
-      checkedDestinationId: currentDestinationOption.dataset.destinationId
+    this._setState({
+      checkedDestinationId: currentDestinationOption.dataset.destinationId,
     });
   };
 
@@ -473,15 +473,21 @@ export default class PointEditView extends AbstractStatefulView {
     }
   };
 
-  #dateFromCloseHandler = ([userDate]) => {
-    this.updateElement({
+  #dateFromChangeHandler = ([userDate]) => {
+    this._setState({
       dateFrom: userDate,
-      dateTo: firstDateIsAfterSecond(userDate, this._state.dateTo) ? userDate : this._state.dateTo
     });
+    this.#datepickerTo.set('minDate', userDate);
+    if(firstDateIsAfterSecond(userDate, this._state.dateTo)) {
+      this._setState({
+        dateTo: userDate,
+      });
+      this.#datepickerTo.setDate(userDate);
+    }
   };
 
-  #dateToCloseHandler = ([userDate]) => {
-    this.updateElement({
+  #dateToChangeHandler = ([userDate]) => {
+    this._setState({
       dateTo: userDate,
     });
   };

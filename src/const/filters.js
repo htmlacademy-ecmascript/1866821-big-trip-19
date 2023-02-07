@@ -19,8 +19,6 @@ const FILTERS_DEFAULT_TYPES_WITH_COUNT = [
   {'type': Filters.PRESENT, 'count': 0},
 ];
 
-const NO_POINTS_MESSAGE = 'Click New Event to create your first point';
-
 const EmptyPointsListType = {
   [Filters.EVERYTHING]: 'Click New Event to create your first point',
   [Filters.FUTURE]: 'There are no events in future',
@@ -32,6 +30,5 @@ export {
   Filters,
   FILTERS_DEFAULT_ORDER_VALUES,
   FILTERS_DEFAULT_TYPES_WITH_COUNT,
-  NO_POINTS_MESSAGE,
   EmptyPointsListType
 };

@@ -15,14 +15,14 @@ const sortPointsDurationDown = (firstPoint, secondPoint) => {
     }
   );
 
-  const seconfPointDuration = getTimeDifference(
+  const secondPointDuration = getTimeDifference(
     {
       firstDate: secondPoint.dateFrom,
       secondDate: secondPoint.dateTo,
       isSimple: true
     }
   );
-  return seconfPointDuration - firstPointDuration;
+  return secondPointDuration - firstPointDuration;
 };
 
 export {

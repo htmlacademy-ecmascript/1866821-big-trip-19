@@ -39,8 +39,8 @@ export default class EmptyPointsListPresenter {
   #handleModelEvent = (updateType, data) => {
     const filteredPoints = filter[this.#filtersModel.filter](this.#pointsModel.elements);
 
-    const pointsClear = (this.#pointsModel.elements.length === 0);
-    const filtersClear = (filteredPoints.length === 0);
+    const isPointsClear = (this.#pointsModel.elements.length === 0);
+    const isFiltersClear = (filteredPoints.length === 0);
 
     const typesForInit = (updateType === UpdateType.CLEAR || updateType === UpdateType.MINOR);
 
@@ -48,11 +48,11 @@ export default class EmptyPointsListPresenter {
       this.clear();
     }
 
-    if (typesForInit && filtersClear && pointsClear) {
+    if (typesForInit && isFiltersClear && isPointsClear) {
       this.init({checkedType: Filters.EVERYTHING});
       return;
     }
-    if ((pointsClear || filtersClear) && (typesForInit || FILTERS_DEFAULT_ORDER_VALUES.includes(data))) {
+    if ((isPointsClear || isFiltersClear) && (typesForInit || FILTERS_DEFAULT_ORDER_VALUES.includes(data))) {
       this.init();
     }
 
